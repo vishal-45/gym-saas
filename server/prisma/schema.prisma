@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  password  String
+  tier      String   @default("Starter")
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members   Member[]
+  trainers  Trainer[]
+  staff     Staff[]
+  membershipPlans MembershipPlan[]
+  leads     Lead[]
+  notifications Notification[]
+}
+
+model Lead {
+  id              String    @id @default(uuid())
+  tenantId        String
+  name            String
+  phone           String
+  email           String?
+  source          String    @default("Walk-in") // Walk-in, Referral, Website
+  status          String    @default("New") // New, Contacted, Trial, Converted, Lost
+  interest        String?
+  trialStartDate  DateTime?
+  trialEndDate    DateTime?
+  nextFollowUp    DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+}
+
+
+model Member {
+  id                String        @id @default(uuid())
+  tenantId          String
+  planId            String?
+  name              String
+  email             String?
+  phone             String?
+  plan              String       // Legacy/Display plan name
+  status            String        @default("Active")
+  subscriptionStart DateTime?
+  subscriptionEnd   DateTime?
+  autoRenew         Boolean       @default(false)
+  trainerId         String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  password          String?
+  attendance        Attendance[]
+  bookings          Booking[]
+  tenant            Tenant        @relation(fields: [tenantId], references: [id])
+  membershipPlan    MembershipPlan? @relation(fields: [planId], references: [id])
+  trainer           Trainer?      @relation(fields: [trainerId], references: [id])
+  payments          Payment[]
+  progressLogs      ProgressLog[]
+  workoutPlans      WorkoutPlan[]
+  dietPlans         DietPlan[]
+}
+
+model MembershipPlan {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  price       Float
+  duration    Int      // Duration in days
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  members     Member[]
+}
+
+model Class {
+  id        String    @id @default(uuid())
+  tenantId  String
+  title     String
+  time      String
+  trainer   String
+  trainerId String?
+  capacity  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+  trainerRef Trainer? @relation(fields: [trainerId], references: [id])
+}
+
+model Booking {
+  id        String   @id @default(uuid())
+  memberId  String
+  classId   String
+  status    String   @default("Confirmed")
+  createdAt DateTime @default(now())
+  class     Class    @relation(fields: [classId], references: [id])
+  member    Member   @relation(fields: [memberId], references: [id])
+}
+
+model Payment {
+  id                String   @id @default(uuid())
+  memberId          String
+  tenantId          String
+  amount            Float
+  currency          String   @default("INR")
+  status            String   @default("Pending")
+  type              String
+  method            String?
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  createdAt         DateTime @default(now())
+  member            Member   @relation(fields: [memberId], references: [id])
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  memberId  String
+  tenantId  String
+  timestamp DateTime @default(now())
+  member    Member   @relation(fields: [memberId], references: [id])
+}
+
+model Trainer {
+  id              String   @id @default(uuid())
+  tenantId        String
+  name            String
+  email           String
+  phone           String?
+  specialty       String?
+  status          String   @default("Active")
+  password        String?
+  
+  // Financial Configuration
+  paymentModel    String   @default("SALARY") // SALARY | REVENUE_SHARE | PER_SESSION
+  baseSalary      Float    @default(0)
+  commissionRate  Float    @default(0)        // In percentage (e.g., 60 for 60%)
+  perSessionRate  Float    @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  classes         Class[]
+  members         Member[]
+  payouts         TrainerPayout[]
+}
+
+model TrainerPayout {
+  id          String   @id @default(uuid())
+  trainerId   String
+  amount      Float
+  month       Int
+  year        Int
+  status      String   @default("Pending") // Pending | Paid
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+  trainer     Trainer  @relation(fields: [trainerId], references: [id])
+}
+
+model Staff {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  email     String
+  phone     String?
+  role      String
+  permissions String?  // JSON array: ["leads", "scanner", "payments", "analytics", "schedule"]
+  status    String   @default("Active")
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model Resource {
+  id        String   @id @default(uuid())
+  tenantId  String
+  title     String
+  type      String
+  url       String
+  category  String?
+  createdAt DateTime @default(now())
+}
+
+
+
+model ProgressLog {
+  id        String   @id @default(uuid())
+  memberId  String
+  weight    Float?
+  bodyFat   Float?
+  photoUrl  String?
+  notes     String?
+  date      DateTime @default(now())
+  member    Member   @relation(fields: [memberId], references: [id])
+}
+
+model WorkoutPlan {
+  id          String   @id @default(uuid())
+  memberId    String
+  title       String
+  exercises   String   // JSON String for SQLite compatibility
+  trainerName String?
+  createdAt   DateTime @default(now())
+  member      Member   @relation(fields: [memberId], references: [id])
+}
+
+model DietPlan {
+  id          String   @id @default(uuid())
+  memberId    String
+  title       String
+  macros      String?  // JSON String
+  meals       String   // JSON String
+  createdAt   DateTime @default(now())
+  member      Member   @relation(fields: [memberId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  tenantId  String
+  userId    String?  // Member or Staff ID
+  title     String
+  message   String
+  type      String   // "EXPIRY", "CHECKIN", "BILLING", "SYSTEM"
+  status    String   @default("Unread") // Unread, Read
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+

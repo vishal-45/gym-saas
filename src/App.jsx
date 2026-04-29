@@ -1,171 +1,99 @@
-import { useState, useEffect } from 'react';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Dumbbell, 
-  CreditCard, 
-  Settings, 
-  LogOut,
-  TrendingUp,
-  TrendingDown,
-  Plus,
-  Activity
-} from 'lucide-react';
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { GymProvider } from './context/GymContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
+import MainLayout from './layouts/MainLayout';
+import DashboardPage from './pages/DashboardPage';
+import MembersPage from './pages/MembersPage';
+import ClassesPage from './pages/tenant/ClassesPage';
+import BillingPage from './pages/tenant/BillingPage';
+import SettingsPage from './pages/tenant/SettingsPage';
+import TrainersPage from './pages/tenant/TrainersPage';
+import StaffPage from './pages/tenant/StaffPage';
+import PlansPage from './pages/tenant/PlansPage';
+import LeadsPage from './pages/tenant/LeadsPage';
+import WellnessPage from './pages/tenant/WellnessPage';
+
+// Lazy loaded components (isolated from bundle failure)
+const AttendanceScanner = lazy(() => import('./pages/tenant/AttendanceScanner'));
+const VaultManager = lazy(() => import('./pages/tenant/VaultManager'));
+const MemberDashboard = lazy(() => import('./pages/member/MemberDashboard'));
+
+import AdminLayout from './layouts/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import TenantsList from './pages/admin/TenantsList';
+import AdminSearch from './pages/admin/AdminSearch';
+import AdminLogs from './pages/admin/AdminLogs';
+
+import RegisterGym from './pages/auth/RegisterGym';
+import LoginPage from './pages/auth/LoginPage';
+import SelfServiceOnboarding from './pages/tenant/SelfServiceOnboarding';
+
+import MemberLoginPage from './pages/auth/MemberLoginPage';
+import StaffLoginPage from './pages/auth/StaffLoginPage';
+import StaffPortalPage from './pages/staff/StaffPortalPage';
+
+const LoadingFallback = () => (
+  <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#09090b', color: '#8b5cf6' }}>
+    <div className="pulse-dot" style={{ width: '20px', height: '20px' }}></div>
+    <span style={{ marginLeft: '1rem', fontWeight: 600 }}>Loading Module...</span>
+  </div>
+);
 
 function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [loading, setLoading] = useState(true);
-
-  // Simulate loading data to show off initial animation
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { id: 'members', label: 'Members', icon: <Users size={20} /> },
-    { id: 'classes', label: 'Classes & Plans', icon: <Dumbbell size={20} /> },
-    { id: 'billing', label: 'Billing', icon: <CreditCard size={20} /> },
-    { id: 'settings', label: 'Settings', icon: <Settings size={20} /> },
-  ];
-
-  const recentMembers = [
-    { id: 1, name: 'Alex Johnson', plan: 'Premium Pass', time: '10 mins ago', initials: 'AJ' },
-    { id: 2, name: 'Sarah Miller', plan: 'Basic Month', time: '2 hours ago', initials: 'SM' },
-    { id: 3, name: 'David Chen', plan: 'Annual Pro', time: '5 hours ago', initials: 'DC' },
-  ];
-
-  if (loading) {
-    return (
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#09090b' }}>
-        <div style={{ width: '40px', height: '40px', border: '3px solid #27272a', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-      </div>
-    );
-  }
-
   return (
-    <div className="app-container">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <Dumbbell className="logo-icon" color="#3b82f6" size={28} />
-          <span className="logo-text">CoreFitness</span>
-        </div>
-        
-        <nav className="nav-menu">
-          {navItems.map((item) => (
-            <div 
-              key={item.id}
-              className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(item.id)}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </nav>
+    <BrowserRouter>
+      {/* We wrap everything inside GymProvider so global Auth rules apply everywhere */}
+      <GymProvider>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            {/* Super Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="tenants" element={<TenantsList />} />
+              <Route path="search" element={<AdminSearch />} />
+              <Route path="logs" element={<AdminLogs />} />
+            </Route>
 
-        <div style={{ padding: '1.5rem 1rem', borderTop: '1px solid var(--border-color)' }}>
-          <div className="nav-item" style={{ color: '#ef4444' }}>
-            <LogOut size={20} />
-            <span>Sign Out</span>
-          </div>
-        </div>
-      </aside>
+            {/* Public / Auth Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register-gym" element={<RegisterGym />} />
+            <Route path="/join/:gymName" element={<SelfServiceOnboarding />} />
+            
+            <Route path="/member-login" element={<MemberLoginPage />} />
+            <Route path="/staff-login" element={<StaffLoginPage />} />
 
-      {/* Main Content */}
-      <main className="main-content">
-        <header className="topbar">
-          <h1 className="page-title">
-            {navItems.find(i => i.id === activeTab)?.label} Overview
-          </h1>
-          
-          <div className="user-profile">
-            <span style={{ fontSize: '0.875rem', fontWeight: 500, paddingRight: '0.5rem' }}>Admin</span>
-            <div className="avatar">A</div>
-          </div>
-        </header>
+            {/* Secure Member Dashboard routes */}
+            <Route path="/member" element={<ProtectedRoute />}>
+              <Route index element={<Navigate to="/member/dashboard" replace />} />
+              <Route path="dashboard" element={<MemberDashboard />} />
+            </Route>
 
-        {activeTab === 'dashboard' && (
-          <>
-            <div className="dashboard-grid">
-              <div className="glass-card">
-                <div className="stat-title">Total Active Members</div>
-                <div className="stat-value">
-                  2,451
-                  <span className="stat-trend positive">
-                    <TrendingUp size={16} style={{ marginRight: '4px' }}/>
-                    12%
-                  </span>
-                </div>
-              </div>
+            {/* Staff / Trainer Portal */}
+            <Route path="/staff-portal" element={<StaffPortalPage />} />
 
-              <div className="glass-card">
-                <div className="stat-title">Monthly Revenue</div>
-                <div className="stat-value">
-                  $84,250
-                  <span className="stat-trend positive">
-                    <TrendingUp size={16} style={{ marginRight: '4px' }}/>
-                    8%
-                  </span>
-                </div>
-              </div>
-
-              <div className="glass-card">
-                <div className="stat-title">Churn Rate</div>
-                <div className="stat-value">
-                  2.4%
-                  <span className="stat-trend negative">
-                    <TrendingDown size={16} style={{ marginRight: '4px' }}/>
-                    0.5%
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="recent-activity">
-              <div className="section-header">
-                <h2 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                  <Activity size={20} color="#3b82f6"/> 
-                  Recent Check-ins
-                </h2>
-                <button className="btn-primary">
-                  <Plus size={18} />
-                  Add Member
-                </button>
-              </div>
-
-              <div className="activity-list">
-                {recentMembers.map(member => (
-                  <div key={member.id} className="activity-item">
-                    <div className="activity-user">
-                      <div className="activity-avatar" style={{ background: `hsl(${member.id * 80}, 60%, 40%)`, color: 'white' }}>
-                        {member.initials}
-                      </div>
-                      <div className="activity-details">
-                        <p>{member.name}</p>
-                        <span>{member.plan}</span>
-                      </div>
-                    </div>
-                    <div className="activity-time">{member.time}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-        
-        {activeTab !== 'dashboard' && (
-          <div style={{ padding: '2rem', color: 'var(--text-secondary)' }}>
-            <p>This module is currently under construction. Please check back later.</p>
-          </div>
-        )}
-      </main>
-    </div>
+            {/* Secure Tenant Dashboard Routes (Protected by JWT State) */}
+            <Route path="/" element={<ProtectedRoute />}>
+              <Route element={<MainLayout />}>
+                <Route index element={<DashboardPage />} />
+                <Route path="members" element={<MembersPage />} />
+                <Route path="classes" element={<ClassesPage />} />
+                <Route path="billing" element={<BillingPage />} />
+                <Route path="attendance" element={<AttendanceScanner />} />
+                <Route path="vault" element={<VaultManager />} />
+                <Route path="trainers" element={<TrainersPage />} />
+                <Route path="staff" element={<StaffPage />} />
+                <Route path="plans" element={<PlansPage />} />
+                <Route path="leads" element={<LeadsPage />} />
+                <Route path="wellness" element={<WellnessPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
+            </Route>
+          </Routes>
+        </Suspense>
+      </GymProvider>
+    </BrowserRouter>
   );
 }
 
