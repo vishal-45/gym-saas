@@ -2,8 +2,10 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.middleware.js';
+import { requireGymOwner } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
+router.use(verifyToken, requireGymOwner);
 
 // GET all staff for the authenticated Tenant
 router.get('/', verifyToken, async (req, res) => {
@@ -66,12 +68,17 @@ router.put('/:id', verifyToken, async (req, res) => {
       updateData.password = await bcrypt.hash(password, salt);
     }
 
-    const updated = await prisma.staff.update({
+    const updated = await prisma.staff.updateMany({
       where: { id: req.params.id, tenantId: req.user.tenantId || req.user.id },
       data: updateData
     });
-    const { password: _, ...safe } = updated;
-    res.json(safe);
+    const updatedStaff = await prisma.staff.findFirst({ where: { id: req.params.id } });
+    if(updatedStaff) {
+      const { password: _, ...safe } = updatedStaff;
+      res.json(safe);
+    } else {
+      res.status(404).json({ error: "Staff not found" });
+    }
   } catch(err) {
     res.status(500).json({ error: "Failed to update staff profile." });
   }
@@ -80,7 +87,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 // DELETE a specific staff member
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
-    await prisma.staff.delete({
+    await prisma.staff.deleteMany({
       where: { id: req.params.id, tenantId: req.user.tenantId || req.user.id }
     });
     res.json({ success: true });

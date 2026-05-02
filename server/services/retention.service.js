@@ -1,7 +1,21 @@
 import prisma from '../lib/prisma.js';
 
 export async function runRetentionScanForTenant(tenantId) {
-    // Find memberships expiring in the next 7 days
+    // 1. Mark expired members as Inactive
+    const expiredMembers = await prisma.member.updateMany({
+      where: {
+        tenantId,
+        status: "Active",
+        subscriptionEnd: { lt: new Date() }
+      },
+      data: { status: "Inactive" }
+    });
+
+    if (expiredMembers.count > 0) {
+      console.log(`[RETENTION] Tenant ${tenantId}: Deactivated ${expiredMembers.count} expired memberships.`);
+    }
+
+    // 2. Find memberships expiring in the next 7 days
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
     

@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { verifyToken } from '../middleware/auth.middleware.js';
+import { requirePermission } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -25,11 +26,11 @@ router.get('/', verifyToken, async (req, res) => {
 });
 
 // POST a new class (Tenant only)
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', verifyToken, requirePermission('schedule'), async (req, res) => {
   try {
     if (req.user.role === 'MEMBER') return res.status(403).json({ error: "Members cannot create classes." });
 
-    const tenantId = req.user.id;
+    const tenantId = req.user.tenantId || req.user.id;
     const { title, time, trainer, capacity } = req.body;
 
     const newClass = await prisma.class.create({
@@ -49,14 +50,14 @@ router.post('/', verifyToken, async (req, res) => {
 });
 
 // DELETE a class (Tenant only)
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, requirePermission('schedule'), async (req, res) => {
   try {
     if (req.user.role === 'MEMBER') return res.status(403).json({ error: "Access Denied." });
 
-    await prisma.class.delete({
+    await prisma.class.deleteMany({
       where: { 
         id: req.params.id,
-        tenantId: req.user.id 
+        tenantId: req.user.tenantId || req.user.id 
       }
     });
     res.json({ success: true });
@@ -82,6 +83,7 @@ router.post('/:id/book', verifyToken, async (req, res) => {
     });
 
     if (!targetClass) return res.status(404).json({ error: "Class not found." });
+    if (targetClass.tenantId !== req.user.tenantId) return res.status(403).json({ error: "Class does not belong to your gym." });
     
     // Check if already booked
     const alreadyBooked = targetClass.bookings.find(b => b.memberId === memberId);

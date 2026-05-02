@@ -1,11 +1,12 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.middleware.js';
+import { requirePermission } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
 
 // Record Check-in
-router.post('/check-in', verifyToken, async (req, res) => {
+router.post('/check-in', verifyToken, requirePermission('scanner'), async (req, res) => {
   try {
     const { memberId } = req.body;
     const tenantId = req.user.tenantId || req.user.id;

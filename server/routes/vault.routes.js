@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 // Get Library Resources
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const tenantId = req.user.role === 'MEMBER' ? req.user.tenantId : req.user.id;
+    const tenantId = req.user.tenantId || req.user.id;
     
     const resources = await prisma.resource.findMany({
       where: { tenantId },
@@ -34,7 +34,7 @@ router.post('/', verifyToken, async (req, res) => {
         type,
         url,
         category,
-        tenantId: req.user.id
+        tenantId: req.user.tenantId || req.user.id
       }
     });
     
@@ -49,10 +49,10 @@ router.delete('/:id', verifyToken, async (req, res) => {
   try {
     if (req.user.role === 'MEMBER') return res.status(403).json({ error: "Access denied." });
     
-    await prisma.resource.delete({
+    await prisma.resource.deleteMany({
       where: { 
         id: req.params.id,
-        tenantId: req.user.id
+        tenantId: req.user.tenantId || req.user.id
       }
     });
     

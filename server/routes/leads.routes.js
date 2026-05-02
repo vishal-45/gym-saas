@@ -1,8 +1,10 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.middleware.js';
+import { requirePermission } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
+router.use(verifyToken, requirePermission('leads'));
 
 // GET all leads for the authenticated Tenant
 router.get('/', verifyToken, async (req, res) => {
@@ -48,7 +50,7 @@ router.put('/:id', verifyToken, async (req, res) => {
   try {
     const { status, trialStartDate, trialEndDate, nextFollowUp, notes } = req.body;
     
-    const lead = await prisma.lead.update({
+    await prisma.lead.updateMany({
       where: { 
         id: req.params.id,
         tenantId: (req.user.tenantId || req.user.id)
@@ -62,7 +64,8 @@ router.put('/:id', verifyToken, async (req, res) => {
       }
     });
 
-    res.json(lead);
+    const updatedLead = await prisma.lead.findFirst({ where: { id: req.params.id }});
+    res.json(updatedLead);
   } catch (err) {
     res.status(500).json({ error: "Failed to update lead protocols." });
   }
@@ -71,7 +74,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 // DELETE a lead
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
-    await prisma.lead.delete({
+    await prisma.lead.deleteMany({
       where: { 
         id: req.params.id,
         tenantId: (req.user.tenantId || req.user.id)

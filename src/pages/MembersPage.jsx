@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Plus, UserPlus, X, Award, AlertCircle, Edit, Trash2, Dumbbell } from 'lucide-react';
+import { Search, Plus, UserPlus, X, Award, AlertCircle, Edit, Trash2, Dumbbell, Radio } from 'lucide-react';
 import { useGymContext } from '../context/GymContext';
 
 export default function MembersPage() {
@@ -7,6 +7,10 @@ export default function MembersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  
+  const [isBroadcastOpen, setIsBroadcastOpen] = useState(false);
+  const [broadcastData, setBroadcastData] = useState({ title: '', message: '' });
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -99,6 +103,32 @@ export default function MembersPage() {
     setErrorMsg('');
   };
 
+  const handleBroadcast = async (e) => {
+    e.preventDefault();
+    setIsBroadcasting(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/notifications/broadcast`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(broadcastData)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('Broadcast sent to all members successfully!');
+        setIsBroadcastOpen(false);
+        setBroadcastData({ title: '', message: '' });
+      } else {
+        alert(data.error || 'Failed to send broadcast');
+      }
+    } catch (err) {
+      alert('Failed to send broadcast');
+    }
+    setIsBroadcasting(false);
+  };
+
   return (
     <>
       <div className={`members-page fade-in ${isModalOpen ? 'blur-background' : ''}`}>
@@ -117,6 +147,9 @@ export default function MembersPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            <button className="btn-secondary" onClick={() => setIsBroadcastOpen(true)} style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', borderColor: 'rgba(139, 92, 246, 0.2)' }}>
+              <Radio size={18} /> Broadcast
+            </button>
             <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
               <Plus size={18} /> Enroll New
             </button>
@@ -316,6 +349,53 @@ export default function MembersPage() {
                   {isSubmitting ? 'Syncing to Database...' : (
                     editingId ? <><Edit size={18} /> Update Profile</> : <><UserPlus size={18} /> Provision Member</>
                   )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Broadcast Modal */}
+      <div className={`modal-overlay ${isBroadcastOpen ? 'open' : ''}`} onClick={() => setIsBroadcastOpen(false)}>
+        <div className="slide-pane" onClick={e => e.stopPropagation()}>
+          <div className="modal-header">
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Radio color="#8b5cf6" /> System Broadcast</h3>
+            <button className="btn-icon-round" onClick={() => setIsBroadcastOpen(false)}>
+              <X size={20} />
+            </button>
+          </div>
+          
+          <div className="modal-body">
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+              Send an announcement to the member app dashboard. All active members will receive this notification.
+            </p>
+            <form onSubmit={handleBroadcast} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
+              <div className="form-group">
+                <label>Announcement Title</label>
+                <input 
+                  type="text" 
+                  value={broadcastData.title}
+                  onChange={(e) => setBroadcastData({...broadcastData, title: e.target.value})} 
+                  placeholder="e.g. Gym Closed Tomorrow" 
+                  required 
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Message Content</label>
+                <textarea 
+                  value={broadcastData.message}
+                  onChange={(e) => setBroadcastData({...broadcastData, message: e.target.value})}  
+                  placeholder="Provide details about the announcement..." 
+                  style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'var(--bg-surface)', border: '1px solid var(--border-color)', color: 'white', minHeight: '150px', resize: 'vertical' }}
+                  required
+                />
+              </div>
+
+              <div style={{ marginTop: 'auto', paddingTop: '2rem' }}>
+                <button type="submit" disabled={isBroadcasting} className="btn-primary" style={{ width: '100%', justifyContent: 'center', background: 'linear-gradient(135deg, #8b5cf6, #6366f1)' }}>
+                  {isBroadcasting ? 'Transmitting...' : <><Radio size={18} /> Send Broadcast</>}
                 </button>
               </div>
             </form>

@@ -20,6 +20,7 @@ router.post('/', verifyToken, async (req, res) => {
     });
 
     if (!classToBook) return res.status(404).json({ error: "Class not found." });
+    if (classToBook.tenantId !== req.user.tenantId) return res.status(403).json({ error: "Class does not belong to your gym." });
     
     // Check capacity
     if (classToBook.bookings.length >= classToBook.capacity) {

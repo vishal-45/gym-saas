@@ -8,13 +8,14 @@ export default function AdminSearch() {
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleSearch = async (e) => {
+    const handleSearch = async (e) => {
     e.preventDefault();
     if (!query) return;
     
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     setIsSearching(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/members/search?q=${query}`, {
+      const res = await fetch(`${API_URL}/admin/members/search?q=${query}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();

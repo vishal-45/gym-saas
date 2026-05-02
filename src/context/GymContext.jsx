@@ -189,7 +189,7 @@ export function GymProvider({ children }) {
 
   const updateMember = async (id, memberData) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/members/${id}`, {
+      const res = await fetch(`${API_URL}/members/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -216,7 +216,7 @@ export function GymProvider({ children }) {
 
   const deleteMember = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/members/${id}`, {
+      const res = await fetch(`${API_URL}/members/${id}`, {
         method: 'DELETE',
         headers: { 
           'Authorization': `Bearer ${token}` 
@@ -255,7 +255,7 @@ export function GymProvider({ children }) {
 
   const addClass = async (classData) => {
     try {
-      const res = await fetch('http://localhost:5000/api/classes', {
+      const res = await fetch(`${API_URL}/classes`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -275,7 +275,7 @@ export function GymProvider({ children }) {
 
   const deleteClass = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/classes/${id}`, {
+      const res = await fetch(`${API_URL}/classes/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -294,7 +294,7 @@ export function GymProvider({ children }) {
 
   const bookClass = async (classId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/classes/${classId}/book`, {
+      const res = await fetch(`${API_URL}/classes/${classId}/book`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -314,7 +314,7 @@ export function GymProvider({ children }) {
 
   const fetchMyBookings = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/bookings/my', {
+      const res = await fetch(`${API_URL}/bookings/my`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -341,7 +341,7 @@ export function GymProvider({ children }) {
 
   const toggleTenantStatus = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/tenants/${id}/toggle`, {
+      const res = await fetch(`${API_URL}/admin/tenants/${id}/toggle`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -353,7 +353,7 @@ export function GymProvider({ children }) {
 
   const impersonateTenant = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/tenants/${id}/impersonate`, {
+      const res = await fetch(`${API_URL}/admin/tenants/${id}/impersonate`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -404,7 +404,7 @@ export function GymProvider({ children }) {
 
   const createPaymentOrder = async (amount, memberId) => {
     try {
-      const res = await fetch('http://localhost:5000/api/payments/create-order', {
+      const res = await fetch(`${API_URL}/payments/create-order`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -420,7 +420,7 @@ export function GymProvider({ children }) {
 
   const verifyPayment = async (verificationData) => {
     try {
-      const res = await fetch('http://localhost:5000/api/payments/verify', {
+      const res = await fetch(`${API_URL}/payments/verify`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -438,7 +438,7 @@ export function GymProvider({ children }) {
 
   const recordOfflinePayment = async (paymentData) => {
     try {
-      const res = await fetch('http://localhost:5000/api/payments/offline', {
+      const res = await fetch(`${API_URL}/payments/offline`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -459,7 +459,7 @@ export function GymProvider({ children }) {
   // ----------------------------------------------------
   const checkInMember = async (memberId) => {
     try {
-      const res = await fetch('http://localhost:5000/api/attendance/check-in', {
+      const res = await fetch(`${API_URL}/attendance/check-in`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -493,7 +493,7 @@ export function GymProvider({ children }) {
   const fetchVaultResources = async () => {
     setIsVaultLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/vault', {
+      const res = await fetch(`${API_URL}/vault`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -506,7 +506,7 @@ export function GymProvider({ children }) {
 
   const addVaultResource = async (resourceData) => {
     try {
-      const res = await fetch('http://localhost:5000/api/vault', {
+      const res = await fetch(`${API_URL}/vault`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -524,7 +524,7 @@ export function GymProvider({ children }) {
 
   const deleteVaultResource = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/vault/${id}`, {
+      const res = await fetch(`${API_URL}/vault/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -575,7 +575,7 @@ export function GymProvider({ children }) {
 
   const updateTrainer = async (id, trainerData) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/trainers/${id}`, {
+      const res = await fetch(`${API_URL}/trainers/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -594,7 +594,7 @@ export function GymProvider({ children }) {
 
   const deleteTrainer = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/trainers/${id}`, {
+      const res = await fetch(`${API_URL}/trainers/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -647,7 +647,7 @@ export function GymProvider({ children }) {
 
   const updateStaff = async (id, staffData) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/staff/${id}`, {
+      const res = await fetch(`${API_URL}/staff/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -666,7 +666,7 @@ export function GymProvider({ children }) {
 
   const deleteStaff = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/staff/${id}`, {
+      const res = await fetch(`${API_URL}/staff/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -716,7 +716,7 @@ export function GymProvider({ children }) {
 
   const updatePlan = async (id, planData) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/plans/${id}`, {
+      const res = await fetch(`${API_URL}/plans/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -735,7 +735,7 @@ export function GymProvider({ children }) {
 
   const deletePlan = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/plans/${id}`, {
+      const res = await fetch(`${API_URL}/plans/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

@@ -5,6 +5,18 @@ import { verifyToken } from '../middleware/auth.middleware.js';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+const verifyMemberTenant = async (req, res, next) => {
+    const memberId = req.params.memberId || req.body.memberId;
+    const tenantId = req.user.tenantId || req.user.id;
+    if (!memberId) return next();
+    
+    const member = await prisma.member.findFirst({ where: { id: memberId, tenantId } });
+    if (!member) return res.status(403).json({ error: "Access Denied. Member not in your gym." });
+    next();
+};
+
+router.use(verifyMemberTenant);
+
 // ----------------------------------------------------
 // UTILS
 // ----------------------------------------------------

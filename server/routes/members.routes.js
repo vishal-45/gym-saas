@@ -117,14 +117,17 @@ router.put('/:id', verifyToken, async (req, res) => {
       updateData.password = await bcrypt.hash(password, salt);
     }
     
-    const updated = await prisma.member.update({
+    const updated = await prisma.member.updateMany({
       where: { 
         id: req.params.id,
         tenantId // SECURITY: Ensure member belongs to this tenant
       },
       data: updateData
     });
-    res.json(updated);
+    
+    // updateMany returns { count: 1 }, we can fetch the updated record if needed
+    const updatedMember = await prisma.member.findFirst({ where: { id: req.params.id, tenantId } });
+    res.json(updatedMember);
   } catch(err) {
     res.status(500).json({ error: "Update failed." });
   }
@@ -134,7 +137,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const tenantId = req.user.tenantId || req.user.id;
-    await prisma.member.delete({
+    await prisma.member.deleteMany({
       where: { 
         id: req.params.id,
         tenantId 

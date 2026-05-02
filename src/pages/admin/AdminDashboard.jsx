@@ -9,8 +9,9 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       try {
-        const res = await fetch('http://localhost:5000/api/admin/stats', {
+        const res = await fetch(`${API_URL}/admin/stats`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();

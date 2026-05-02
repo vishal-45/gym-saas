@@ -3,6 +3,7 @@ import express from 'express';
 import crypto from 'crypto';
 import { PrismaClient } from '@prisma/client';
 import { verifyToken } from '../middleware/auth.middleware.js';
+import { requirePermission } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -22,6 +23,11 @@ try {
 router.post('/create-order', verifyToken, async (req, res) => {
   try {
     const { amount, memberId } = req.body;
+    const tenantId = req.user.tenantId || req.user.id;
+    
+    // Verify Member belongs to this gym
+    const member = await prisma.member.findFirst({ where: { id: memberId, tenantId } });
+    if (!member) return res.status(404).json({ error: "Member not found in your gym." });
     
     // Create Razorpay Order
     const options = {
@@ -37,7 +43,7 @@ router.post('/create-order', verifyToken, async (req, res) => {
       data: {
         amount: parseFloat(amount),
         memberId,
-        tenantId: req.user.id,
+        tenantId,
         status: 'Pending',
         type: 'Online',
         method: 'Razorpay',
@@ -87,16 +93,20 @@ router.post('/verify', verifyToken, async (req, res) => {
   }
 });
 
-// Record Offline Payment (Owner Only)
-router.post('/offline', verifyToken, async (req, res) => {
+// Record Offline Payment (Staff/Owner Only)
+router.post('/offline', verifyToken, requirePermission('payments'), async (req, res) => {
   try {
     const { memberId, amount, method } = req.body;
+    const tenantId = req.user.tenantId || req.user.id;
     
+    const member = await prisma.member.findFirst({ where: { id: memberId, tenantId } });
+    if (!member) return res.status(404).json({ error: "Member not found in your gym." });
+
     const payment = await prisma.payment.create({
       data: {
         amount: parseFloat(amount),
         memberId,
-        tenantId: req.user.id,
+        tenantId,
         status: 'Paid',
         type: 'Offline',
         method: method || 'Cash',
@@ -116,8 +126,9 @@ router.get('/history', verifyToken, async (req, res) => {
     // If it's a member, show only their payments.
     const isMember = req.user.role === 'MEMBER';
     
+    const tenantId = req.user.tenantId || req.user.id;
     const payments = await prisma.payment.findMany({
-      where: isMember ? { memberId: req.user.id } : { tenantId: req.user.id },
+      where: isMember ? { memberId: req.user.id } : { tenantId },
       include: {
         member: {
           select: { name: true, email: true }

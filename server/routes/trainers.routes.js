@@ -2,8 +2,10 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import { verifyToken } from '../middleware/auth.middleware.js';
+import { requireGymOwner } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
+router.use(verifyToken, requireGymOwner);
 const prisma = new PrismaClient();
 
 // GET all trainers for the authenticated Tenant
@@ -63,15 +65,37 @@ router.post('/', verifyToken, async (req, res) => {
 // GET Trainer Earnings (Analytics)
 router.get('/:id/earnings', verifyToken, async (req, res) => {
     try {
+        const tenantId = req.user.tenantId || req.user.id;
+        const now = new Date();
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
         const trainer = await prisma.trainer.findUnique({
             where: { id: req.params.id },
             include: {
-                members: { include: { payments: { where: { status: 'Confirmed' } } } },
-                classes: { include: { bookings: { where: { status: 'Confirmed' } } } }
+                members: { 
+                    include: { 
+                        payments: { 
+                            where: { 
+                                status: 'Paid',
+                                createdAt: { gte: firstDayOfMonth }
+                            } 
+                        } 
+                    } 
+                },
+                classes: { 
+                    include: { 
+                        bookings: { 
+                            where: { 
+                                status: 'Confirmed',
+                                createdAt: { gte: firstDayOfMonth }
+                            } 
+                        } 
+                    } 
+                }
             }
         });
 
-        if (!trainer) return res.status(404).json({ error: "Trainer not found" });
+        if (!trainer || trainer.tenantId !== tenantId) return res.status(404).json({ error: "Trainer not found" });
 
         let earnings = 0;
         let details = { salary: 0, commission: 0, sessions: 0 };
@@ -100,6 +124,36 @@ router.get('/:id/earnings', verifyToken, async (req, res) => {
     }
 });
 
+// POST Process Payout
+router.post('/:id/payout', verifyToken, async (req, res) => {
+    try {
+        const tenantId = req.user.tenantId || req.user.id;
+        const { amount } = req.body;
+        const now = new Date();
+
+        const trainer = await prisma.trainer.findFirst({
+            where: { id: req.params.id, tenantId }
+        });
+        if (!trainer) return res.status(404).json({ error: "Trainer not found." });
+
+        const payout = await prisma.trainerPayout.create({
+            data: {
+                trainerId: trainer.id,
+                amount: parseFloat(amount),
+                month: now.getMonth() + 1,
+                year: now.getFullYear(),
+                status: "Paid",
+                processedAt: now
+            }
+        });
+
+        res.json({ success: true, payout });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to process payroll." });
+    }
+});
+
 // PUT/UPDATE trainer + optional password reset + finance
 router.put('/:id', verifyToken, async (req, res) => {
   try {
@@ -118,12 +172,17 @@ router.put('/:id', verifyToken, async (req, res) => {
       updateData.password = await bcrypt.hash(password, salt);
     }
 
-    const updated = await prisma.trainer.update({
-      where: { id: req.params.id, tenantId: req.user.id },
+    const updated = await prisma.trainer.updateMany({
+      where: { id: req.params.id, tenantId: req.user.tenantId || req.user.id },
       data: updateData
     });
-    const { password: _, ...safe } = updated;
-    res.json(safe);
+    const updatedTrainer = await prisma.trainer.findFirst({ where: { id: req.params.id } });
+    if(updatedTrainer) {
+      const { password: _, ...safe } = updatedTrainer;
+      res.json(safe);
+    } else {
+      res.status(404).json({ error: "Trainer not found" });
+    }
   } catch(err) {
     res.status(500).json({ error: "Failed to update trainer profile." });
   }
@@ -132,8 +191,8 @@ router.put('/:id', verifyToken, async (req, res) => {
 // DELETE a specific trainer
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
-    await prisma.trainer.delete({
-      where: { id: req.params.id, tenantId: req.user.id }
+    await prisma.trainer.deleteMany({
+      where: { id: req.params.id, tenantId: req.user.tenantId || req.user.id }
     });
     res.json({ success: true });
   } catch(err) {

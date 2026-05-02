@@ -12,9 +12,10 @@ export default function AdminLogs() {
   }, []);
 
   const fetchLogs = async () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/admin/logs', {
+      const res = await fetch(`${API_URL}/admin/logs`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();

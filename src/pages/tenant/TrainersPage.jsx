@@ -11,6 +11,7 @@ export default function TrainersPage() {
   const [editingId, setEditingId] = useState(null);
   const [expandedTrainer, setExpandedTrainer] = useState(null);
   const [trainerEarnings, setTrainerEarnings] = useState({});
+  const [processingPayout, setProcessingPayout] = useState(false);
 
   const getMemberCount = (trainerId) => {
     return members.filter(m => m.trainerId === trainerId).length;
@@ -98,6 +99,31 @@ export default function TrainersPage() {
     }
   };
 
+  const handleProcessPayout = async (trainerId, amount) => {
+    if (!window.confirm(`Are you sure you want to process a payout of ₹${amount}?`)) return;
+    setProcessingPayout(true);
+    try {
+        const res = await fetch(`${API_URL}/trainers/${trainerId}/payout`, {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Payout processed successfully!');
+            fetchEarnings(trainerId); // Refresh earnings
+        } else {
+            alert(data.error || 'Failed to process payout');
+        }
+    } catch (err) {
+        alert('Failed to process payout');
+    }
+    setProcessingPayout(false);
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingId(null);
@@ -181,6 +207,14 @@ export default function TrainersPage() {
                                 <span>Based on {trainer.paymentModel}</span>
                                 <span>Status: Estimated</span>
                             </div>
+                            <button 
+                                className="btn-primary" 
+                                style={{ marginTop: '0.5rem', width: '100%', display: 'flex', justifyContent: 'center' }}
+                                onClick={() => handleProcessPayout(trainer.id, trainerEarnings[trainer.id].totalEarnings)}
+                                disabled={processingPayout || trainerEarnings[trainer.id].totalEarnings === 0}
+                            >
+                                {processingPayout ? 'Processing...' : 'Process Payout'}
+                            </button>
                         </div>
                     ) : (
                         <div className="pulse-dot">Calculating...</div>

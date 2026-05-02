@@ -1,8 +1,10 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { verifyToken } from '../middleware/auth.middleware.js';
+import { requireGymOwner } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
+router.use(verifyToken, requireGymOwner);
 const prisma = new PrismaClient();
 
 // GET all membership plans for the authenticated Tenant
@@ -56,10 +58,10 @@ router.put('/:id', verifyToken, async (req, res) => {
   try {
     const { name, description, price, duration } = req.body;
     
-    const updated = await prisma.membershipPlan.update({
+    const updated = await prisma.membershipPlan.updateMany({
       where: { 
         id: req.params.id,
-        tenantId: req.user.id 
+        tenantId: req.user.tenantId || req.user.id 
       },
       data: { 
         name, 
@@ -68,7 +70,8 @@ router.put('/:id', verifyToken, async (req, res) => {
         duration: parseInt(duration) 
       }
     });
-    res.json(updated);
+    const updatedPlan = await prisma.membershipPlan.findFirst({ where: { id: req.params.id } });
+    res.json(updatedPlan);
   } catch(err) {
     res.status(500).json({ error: "Failed to update membership plan." });
   }
@@ -86,10 +89,10 @@ router.delete('/:id', verifyToken, async (req, res) => {
       return res.status(400).json({ error: "Cannot delete plan. There are active members enrolled in this plan." });
     }
 
-    await prisma.membershipPlan.delete({
+    await prisma.membershipPlan.deleteMany({
       where: { 
         id: req.params.id,
-        tenantId: req.user.id 
+        tenantId: req.user.tenantId || req.user.id 
       }
     });
     res.json({ success: true, message: "Membership plan removed" });

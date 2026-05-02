@@ -125,6 +125,7 @@ router.get('/tenants', verifyToken, verifySuperAdmin, async (req, res) => {
     
     res.json(payload);
   } catch(err) {
+    console.error("Error fetching tenants:", err);
     res.status(500).json({ error: "Failed to fetch platforms" });
   }
 });
