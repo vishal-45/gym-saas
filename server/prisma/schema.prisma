@@ -237,3 +237,11 @@ model Notification {
 }
 
 
+model AuditLog {
+  id        String   @id @default(uuid())
+  adminId   String
+  action    String
+  target    String?
+  details   String?
+  createdAt DateTime @default(now())
+}

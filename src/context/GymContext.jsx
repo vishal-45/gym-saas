@@ -57,19 +57,24 @@ export function GymProvider({ children }) {
     }
   };
 
-  const memberLogin = async (email, password) => {
+  const memberLogin = async (email, password, tenantId = null) => {
     try {
       const res = await fetch(`${API_URL}/auth/member-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, tenantId })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Authentication offline');
       
+      // If the backend says we need to pick a gym
+      if (data.requiresSelection) {
+        return { success: true, requiresSelection: true, options: data.options };
+      }
+
       localStorage.setItem('gym_auth_token', data.token);
       setToken(data.token);
-      setTenant(data.tenant); // Keeping 'tenant' state but it will hold {role: 'MEMBER'}
+      setTenant(data.tenant); 
       return { success: true, role: data.tenant.role };
     } catch (err) {
       return { success: false, error: err.message };
@@ -534,6 +539,42 @@ export function GymProvider({ children }) {
       return { success: false, error: err.message };
     }
   };
+
+  // ----------------------------------------------------
+  // Wellness API
+  // ----------------------------------------------------
+  const fetchMyWorkouts = async (memberId) => {
+    try {
+      const res = await fetch(`${API_URL}/wellness/workouts/${memberId}`, { headers: { 'Authorization': `Bearer ${token}` }});
+      return await res.json();
+    } catch (err) { return []; }
+  };
+
+  const fetchMyDiets = async (memberId) => {
+    try {
+      const res = await fetch(`${API_URL}/wellness/diets/${memberId}`, { headers: { 'Authorization': `Bearer ${token}` }});
+      return await res.json();
+    } catch (err) { return []; }
+  };
+
+  const fetchMyProgress = async (memberId) => {
+    try {
+      const res = await fetch(`${API_URL}/wellness/progress/${memberId}`, { headers: { 'Authorization': `Bearer ${token}` }});
+      return await res.json();
+    } catch (err) { return []; }
+  };
+
+  const logProgress = async (data) => {
+    try {
+      const res = await fetch(`${API_URL}/wellness/progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) { return { error: err.message }; }
+  };
+
   // ----------------------------------------------------
   // Trainers API CRUD
   // ----------------------------------------------------

@@ -83,28 +83,57 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Member Login
+// Member Login (With Account Picker Logic)
 router.post('/member-login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, tenantId } = req.body;
 
     if (!email || !password) return res.status(400).json({ error: "Email and password are required." });
 
-    const member = await prisma.member.findFirst({ where: { email } });
-    if (!member) return res.status(400).json({ error: "Invalid member credentials." });
+    // 1. Find all memberships for this email
+    const memberships = await prisma.member.findMany({ 
+      where: { email },
+      include: { tenant: { select: { name: true } } }
+    });
+
+    if (memberships.length === 0) return res.status(400).json({ error: "No member account found with this email." });
+
+    // 2. Filter by those that match the password
+    const validMemberships = [];
+    for (const m of memberships) {
+        if (!m.password) continue;
+        const isValid = await bcrypt.compare(password, m.password);
+        if (isValid) validMemberships.push(m);
+    }
+
+    if (validMemberships.length === 0) return res.status(400).json({ error: "Invalid credentials." });
+
+    // 3. If multiple gyms found and no specific tenantId selected yet, ask user to pick
+    if (validMemberships.length > 1 && !tenantId) {
+        return res.json({
+            requiresSelection: true,
+            options: validMemberships.map(m => ({
+                id: m.id,
+                tenantId: m.tenantId,
+                gymName: m.tenant.name,
+                plan: m.plan,
+                status: m.status
+            }))
+        });
+    }
+
+    // 4. Select the specific membership (either the only one, or the one requested by tenantId)
+    const member = tenantId 
+        ? validMemberships.find(m => m.tenantId === tenantId) 
+        : validMemberships[0];
+
+    if (!member) return res.status(400).json({ error: "Selected gym membership not found." });
 
     if (member.status === 'Suspended') {
-      return res.status(403).json({ error: "Your membership is suspended. Please contact your gym." });
+      return res.status(403).json({ error: "Your membership at this gym is suspended." });
     }
 
-    if (!member.password) {
-      return res.status(400).json({ error: "No password has been set up for this account. Please ask your gym to resend your provision portal link." });
-    }
-
-    const validPassword = await bcrypt.compare(password, member.password);
-    if (!validPassword) return res.status(400).json({ error: "Invalid member credentials." });
-
-    // Generate JWT for Member
+    // 5. Generate JWT for the specific Gym session
     const token = jwt.sign(
       { id: member.id, tenantId: member.tenantId, name: member.name, role: 'MEMBER', plan: member.plan },
       process.env.JWT_SECRET,
@@ -113,11 +142,11 @@ router.post('/member-login', async (req, res) => {
 
     res.json({ 
       token, 
-      tenant: { id: member.id, name: member.name, email: member.email, role: 'MEMBER', plan: member.plan, tenantId: member.tenantId } 
+      tenant: { id: member.id, name: member.name, email: member.email, role: 'MEMBER', plan: member.plan, tenantId: member.tenantId, gymName: member.tenant.name } 
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal Server Error during member authentication." });
+    res.status(500).json({ error: "Authentication failure." });
   }
 });
 

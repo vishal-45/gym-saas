@@ -15,7 +15,7 @@ const verifyMemberTenant = async (req, res, next) => {
     next();
 };
 
-router.use(verifyMemberTenant);
+router.use(verifyToken, verifyMemberTenant);
 
 // ----------------------------------------------------
 // UTILS
@@ -30,7 +30,7 @@ const tryParse = (str) => {
 // ----------------------------------------------------
 
 // Get workouts for a member
-router.get('/workouts/:memberId', verifyToken, async (req, res) => {
+router.get('/workouts/:memberId', async (req, res) => {
   try {
     const workouts = await prisma.workoutPlan.findMany({
       where: { memberId: req.params.memberId },
@@ -45,7 +45,7 @@ router.get('/workouts/:memberId', verifyToken, async (req, res) => {
 });
 
 // Create workout plan
-router.post('/workouts', verifyToken, async (req, res) => {
+router.post('/workouts', async (req, res) => {
   try {
     const { memberId, title, exercises, trainerName } = req.body;
     const plan = await prisma.workoutPlan.create({
@@ -67,7 +67,7 @@ router.post('/workouts', verifyToken, async (req, res) => {
 // ----------------------------------------------------
 
 // Get diets for a member
-router.get('/diets/:memberId', verifyToken, async (req, res) => {
+router.get('/diets/:memberId', async (req, res) => {
   try {
     const diets = await prisma.dietPlan.findMany({
       where: { memberId: req.params.memberId },
@@ -85,7 +85,7 @@ router.get('/diets/:memberId', verifyToken, async (req, res) => {
 });
 
 // Create diet plan
-router.post('/diets', verifyToken, async (req, res) => {
+router.post('/diets', async (req, res) => {
   try {
     const { memberId, title, meals, macros } = req.body;
     const plan = await prisma.dietPlan.create({
@@ -111,7 +111,7 @@ router.post('/diets', verifyToken, async (req, res) => {
 // ----------------------------------------------------
 
 // Get progress logs
-router.get('/progress/:memberId', verifyToken, async (req, res) => {
+router.get('/progress/:memberId', async (req, res) => {
   try {
     const logs = await prisma.progressLog.findMany({
       where: { memberId: req.params.memberId },
@@ -124,7 +124,7 @@ router.get('/progress/:memberId', verifyToken, async (req, res) => {
 });
 
 // Post progress log (weight, bodyfat, photo)
-router.post('/progress', verifyToken, async (req, res) => {
+router.post('/progress', async (req, res) => {
   try {
     const { memberId, weight, bodyFat, photoUrl, notes } = req.body;
     const log = await prisma.progressLog.create({

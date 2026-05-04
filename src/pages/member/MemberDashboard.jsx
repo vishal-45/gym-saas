@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGymContext } from '../../context/GymContext';
-import { LogOut, Dumbbell, Calendar, Award, X, Users, CheckCircle, Plus, QrCode, BookOpen, LineChart, Play, FileText, ExternalLink, CreditCard, Bell } from 'lucide-react';
+import { LogOut, Dumbbell, Calendar, Award, X, Users, CheckCircle, Plus, QrCode, BookOpen, LineChart, Play, FileText, ExternalLink, CreditCard, Bell, LayoutDashboard, Heart, History } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { QRCodeCanvas } from 'qrcode.react';
@@ -9,7 +9,8 @@ export default function MemberDashboard() {
   const { 
     tenant, logout, classes, bookClass, myBookings, fetchMyBookings, isClassesLoading,
     vault, isVaultLoading, fetchVaultResources, createPaymentOrder, verifyPayment,
-    notifications, fetchNotifications, markNotificationRead
+    notifications, fetchNotifications, markNotificationRead,
+    fetchMemberWellness, addProgress, payments, fetchPaymentHistory, attendance, loadAttendance
   } = useGymContext();
   
   const navigate = useNavigate();
@@ -18,12 +19,40 @@ export default function MemberDashboard() {
   const [showQR, setShowQR] = useState(false);
   const [bookingStatus, setBookingStatus] = useState({ id: null, loading: false });
   const [isPaying, setIsPaying] = useState(false);
+  const [wellnessData, setWellnessData] = useState({ workouts: [], diets: [], progress: [] });
+  const [isWellnessLoading, setIsWellnessLoading] = useState(false);
+  const [progressForm, setProgressForm] = useState({ weight: '', bodyFat: '', notes: '' });
+  const [isLoggingProgress, setIsLoggingProgress] = useState(false);
 
   useEffect(() => {
-    fetchMyBookings();
-    fetchVaultResources();
-    fetchNotifications();
-  }, []);
+    if (tenant?.id) {
+      fetchMyBookings();
+      fetchVaultResources();
+      fetchNotifications();
+      fetchPaymentHistory();
+      loadAttendance();
+      loadWellness();
+    }
+  }, [tenant]);
+
+  const loadWellness = async () => {
+    setIsWellnessLoading(true);
+    const data = await fetchMemberWellness(tenant.id);
+    setWellnessData(data);
+    setIsWellnessLoading(false);
+  };
+
+  const handleLogProgress = async (e) => {
+    e.preventDefault();
+    setIsLoggingProgress(true);
+    const res = await addProgress({ ...progressForm, memberId: tenant.id });
+    if (res) {
+        alert("Progress logged successfully!");
+        setProgressForm({ weight: '', bodyFat: '', notes: '' });
+        loadWellness();
+    }
+    setIsLoggingProgress(false);
+  };
 
   const handlePayment = async () => {
     setIsPaying(true);
@@ -81,33 +110,167 @@ export default function MemberDashboard() {
 
   return (
     <>
-      <div className={`member-portal-bg ${(showExplore || showQR) ? 'blur-background' : ''}`} style={{ minHeight: '100vh', backgroundColor: '#09090b', color: '#fff' }}>
-        {/* Top Nav */}
-        <nav style={{ padding: '1rem 2rem', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(9, 9, 11, 0.8)', backdropFilter: 'blur(10px)', sticky: 'top', zIndex: 50 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Dumbbell color="#8b5cf6" size={24} />
-            <span style={{ fontWeight: 700, fontSize: '1.25rem' }}>Member Portal</span>
+      <style>{`
+        .premium-bg {
+          background: radial-gradient(circle at top left, #1a103c 0%, #09090b 50%),
+                      radial-gradient(circle at bottom right, #0d1b2a 0%, #09090b 50%);
+          position: relative;
+          overflow: hidden;
+        }
+        .premium-bg::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.4"/></svg>');
+          opacity: 0.04;
+          pointer-events: none;
+        }
+        .glass-card-premium {
+          background: rgba(22, 25, 31, 0.6);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 28px;
+          padding: 2.5rem;
+          position: relative;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+          overflow: hidden;
+        }
+        .glass-card-premium::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0; height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        }
+        .glass-card-premium:hover {
+          transform: translateY(-8px);
+          border-color: rgba(139, 92, 246, 0.4);
+          box-shadow: 0 25px 50px rgba(139, 92, 246, 0.15);
+        }
+        .membership-card-glow {
+          background: linear-gradient(145deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.02) 100%);
+          box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.2), 0 15px 35px rgba(0,0,0,0.4);
+        }
+        .membership-card-glow:hover {
+          box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.4), 0 20px 50px rgba(139, 92, 246, 0.2);
+        }
+        .animate-gradient-text {
+          background: linear-gradient(to right, #c4b5fd, #8b5cf6, #3b82f6, #c4b5fd);
+          background-size: 200% auto;
+          color: #fff;
+          background-clip: text;
+          text-fill-color: transparent;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: shine 4s linear infinite;
+        }
+        @keyframes shine {
+          to { background-position: 200% center; }
+        }
+        .activity-item-premium {
+          background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,255,255,0.05);
+          border-radius: 20px;
+          padding: 1.25rem 1.5rem;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 1.25rem;
+          transition: all 0.3s ease;
+        }
+        .activity-item-premium:hover {
+          background: rgba(255,255,255,0.04);
+          border-color: rgba(139, 92, 246, 0.3);
+          transform: translateX(6px);
+        }
+        .floating-icon {
+          animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0px); }
+        }
+        .member-main {
+          flex: 1;
+          margin-left: 260px;
+          min-height: 100vh;
+          padding: 2rem 3rem;
+        }
+        .member-sidebar {
+          width: 260px;
+          background: rgba(15, 17, 21, 0.6);
+          backdrop-filter: blur(20px);
+          border-right: 1px solid rgba(255,255,255,0.05);
+          position: fixed;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          z-index: 100;
+        }
+        .nav-button {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          width: 100%;
+          padding: 1rem 1.5rem;
+          background: none;
+          border: none;
+          color: #94a3b8;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border-radius: 12px;
+          margin-bottom: 0.25rem;
+        }
+        .nav-button:hover {
+          background: rgba(255,255,255,0.05);
+          color: #fff;
+        }
+        .nav-button.active {
+          background: #8b5cf6;
+          color: #fff;
+          box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+      `}</style>
+      <div className={`premium-bg ${(showExplore || showQR) ? 'blur-background' : ''}`} style={{ display: 'flex', minHeight: '100vh' }}>
+        {/* Sidebar */}
+        <aside className="member-sidebar">
+          <div style={{ padding: '2.5rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Dumbbell color="#8b5cf6" size={32} />
+            <span style={{ fontWeight: 900, fontSize: '1.5rem', letterSpacing: '-1px' }}>Member Portal</span>
           </div>
-          
-          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-            <button onClick={() => setActiveTab('overview')} className={activeTab === 'overview' ? 'tab-active' : 'tab-inactive'} style={{ background: 'none', border: 'none', color: activeTab === 'overview' ? '#8b5cf6' : '#94a3b8', fontWeight: 600, cursor: 'pointer' }}>Overview</button>
-            <button onClick={() => setActiveTab('vault')} className={activeTab === 'vault' ? 'tab-active' : 'tab-inactive'} style={{ background: 'none', border: 'none', color: activeTab === 'vault' ? '#8b5cf6' : '#94a3b8', fontWeight: 600, cursor: 'pointer' }}>The Vault</button>
-            <button onClick={() => setActiveTab('progress')} className={activeTab === 'progress' ? 'tab-active' : 'tab-inactive'} style={{ background: 'none', border: 'none', color: activeTab === 'progress' ? '#8b5cf6' : '#94a3b8', fontWeight: 600, cursor: 'pointer' }}>Progress</button>
-            
-            <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }}></div>
-            
-            <button onClick={() => setShowQR(true)} className="btn-icon-round" style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
-              <QrCode size={20} />
-            </button>
-            
-            <button onClick={handleLogout} className="btn-icon-round" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
-              <LogOut size={18} />
-            </button>
-          </div>
-        </nav>
 
-        {/* Main Content */}
-        <main style={{ padding: '3rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
+          <nav style={{ padding: '0 1rem', flex: 1 }}>
+            <button onClick={() => setActiveTab('overview')} className={`nav-button ${activeTab === 'overview' ? 'active' : ''}`}>
+              <LayoutDashboard size={20} /> Overview
+            </button>
+            <button onClick={() => setActiveTab('wellness')} className={`nav-button ${activeTab === 'wellness' ? 'active' : ''}`}>
+              <Heart size={20} /> Wellness
+            </button>
+            <button onClick={() => setActiveTab('vault')} className={`nav-button ${activeTab === 'vault' ? 'active' : ''}`}>
+              <BookOpen size={20} /> The Vault
+            </button>
+            <button onClick={() => setActiveTab('progress')} className={`nav-button ${activeTab === 'progress' ? 'active' : ''}`}>
+              <LineChart size={20} /> Progress
+            </button>
+            <button onClick={() => setActiveTab('history')} className={`nav-button ${activeTab === 'history' ? 'active' : ''}`}>
+              <History size={20} /> History
+            </button>
+          </nav>
+
+          <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <button onClick={() => setShowQR(true)} className="nav-button" style={{ color: '#8b5cf6', background: 'rgba(139, 92, 246, 0.05)', marginBottom: '0.5rem' }}>
+              <QrCode size={20} /> Digital ID
+            </button>
+            <button onClick={handleLogout} className="nav-button" style={{ color: '#ef4444' }}>
+              <LogOut size={20} /> Sign Out
+            </button>
+          </div>
+        </aside>
+
+        <main className="member-main">
           
           {activeTab === 'overview' && (
             <div className="fade-in">
@@ -132,80 +295,266 @@ export default function MemberDashboard() {
                 </div>
               ))}
 
-              <div style={{ marginBottom: '3rem' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Welcome back, {tenant?.name?.split(' ')[0]}!</h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Your current fitness status and upcoming sessions.</p>
+              <div style={{ marginBottom: '4rem', marginTop: '1rem' }}>
+                <h1 style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-1px' }}>
+                  Welcome back, <span className="animate-gradient-text">{tenant?.name?.split(' ')[0]}!</span>
+                </h1>
+                <p style={{ color: '#94a3b8', fontSize: '1.25rem', fontWeight: 400 }}>Your personal fitness dashboard and upcoming schedule.</p>
               </div>
 
-              <div className="dashboard-grid fade-in" style={{ gridTemplateColumns: '1fr 2fr' }}>
+              <div className="dashboard-grid fade-in" style={{ gridTemplateColumns: '1fr 1.8fr', gap: '2.5rem' }}>
                 {/* Plan Info Card */}
-                <div className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1))', border: '1px solid rgba(139, 92, 246, 0.3)', padding: '2rem' }}>
-                  <div className="stat-icon-wrapper" style={{ background: 'rgba(139, 92, 246, 0.2)', marginBottom: '1.5rem' }}>
-                    <Award size={28} color="#8b5cf6" />
+                <div className="glass-card-premium membership-card-glow">
+                  <div className="stat-icon-wrapper floating-icon" style={{ background: 'linear-gradient(135deg, #8b5cf6, #6366f1)', boxShadow: '0 10px 20px rgba(139, 92, 246, 0.3)', width: '60px', height: '60px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
+                    <Award size={32} color="#fff" />
                   </div>
-                  <h3 className="stat-title" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Current Membership</h3>
-                  <div className="stat-value" style={{ fontSize: '2.5rem', fontWeight: 800, color: '#fff', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '2px', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 700 }}>Current Membership</h3>
+                  <div style={{ fontSize: '3rem', fontWeight: 900, color: '#fff', marginBottom: '1.5rem', letterSpacing: '-1px', textTransform: 'capitalize' }}>
                     {tenant?.plan || 'Active Pass'}
                   </div>
-                  <div className="status-badge active" style={{ display: 'inline-flex', padding: '0.4rem 1rem', marginBottom: '1.5rem' }}>
-                    <div className="pulse-dot"></div>
-                    Account Status: Active
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.6rem 1.25rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '20px', color: '#10b981', fontWeight: 700, fontSize: '0.85rem', marginBottom: '2.5rem' }}>
+                    <div className="pulse-dot" style={{ background: '#10b981' }}></div>
+                    ACCOUNT STATUS: ACTIVE
                   </div>
                   
                   <button 
                     onClick={handlePayment} 
                     disabled={isPaying}
                     className="btn-primary" 
-                    style={{ width: '100%', background: 'var(--brand-primary)', justifyContent: 'center' }}
+                    style={{ width: '100%', background: 'linear-gradient(135deg, #8b5cf6, #4f46e5)', padding: '1rem', borderRadius: '14px', justifyContent: 'center', fontSize: '1rem', boxShadow: '0 10px 25px rgba(99, 102, 241, 0.4)' }}
                   >
-                    <CreditCard size={18} /> {isPaying ? 'Processing...' : 'Pay Subscription (Online)'}
+                    <CreditCard size={20} /> {isPaying ? 'Processing...' : 'Pay Subscription (Online)'}
                   </button>
                 </div>
 
                 {/* Upcoming Classes Card */}
-                <div className="glass-card" style={{ padding: '2rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <Calendar size={24} color="var(--brand-primary)" /> 
-                      <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>Upcoming Sessions</h3>
+                <div className="glass-card-premium">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <div style={{ background: 'rgba(59, 130, 246, 0.15)', padding: '10px', borderRadius: '12px' }}>
+                        <Calendar size={24} color="#3b82f6" /> 
+                      </div>
+                      <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>Upcoming Sessions</h3>
                     </div>
                     {myBookings.length > 0 && (
-                      <span className="status-badge" style={{ background: 'rgba(59, 130, 246, 0.1)', color: 'var(--brand-primary)' }}>
-                        {myBookings.length} Booked
+                      <span style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '0.5rem 1rem', borderRadius: '20px', fontWeight: 700, fontSize: '0.85rem', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                        {myBookings.length} BOOKED
                       </span>
                     )}
                   </div>
                   
                   {myBookings.length > 0 ? (
-                    <div className="activity-list" style={{ maxHeight: '300px', overflowY: 'auto', paddingRight: '10px' }}>
+                    <div style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '10px' }}>
                       {myBookings.map(booking => (
-                        <div key={booking.id} className="activity-item" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '1rem', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '0.75rem' }}>
-                           <div className="activity-user" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                             <div className="activity-avatar" style={{ background: 'var(--brand-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                               <CheckCircle size={18} />
-                             </div>
-                             <div className="activity-details">
-                                <p style={{ fontWeight: 600, margin: 0 }}>{booking.class.title}</p>
-                                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                  {booking.class.trainer} • {booking.class.time}
-                                </span>
-                             </div>
+                        <div key={booking.id} className="activity-item-premium">
+                           <div style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', width: '50px', height: '50px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 8px 16px rgba(59, 130, 246, 0.3)' }}>
+                             <CheckCircle size={24} />
+                           </div>
+                           <div style={{ flex: 1 }}>
+                              <p style={{ fontWeight: 700, margin: 0, fontSize: '1.1rem' }}>{booking.class.title}</p>
+                              <span style={{ fontSize: '0.9rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem' }}>
+                                <Users size={14} /> {booking.class.trainer} • <Calendar size={14}/> {booking.class.time}
+                              </span>
                            </div>
                         </div>
                       ))}
-                      <button onClick={() => setShowExplore(true)} className="btn-secondary" style={{ width: '100%', marginTop: '1rem', justifyContent: 'center', background: 'rgba(255,255,255,0.05)' }}>
-                         <Calendar size={18} /> Book Another Session
+                      <button onClick={() => setShowExplore(true)} className="btn-secondary" style={{ width: '100%', marginTop: '1.5rem', justifyContent: 'center', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)', color: '#fff', fontSize: '1rem', fontWeight: 600, transition: 'all 0.3s ease' }}>
+                         <Calendar size={18} style={{ marginRight: '8px' }} /> Book Another Session
                       </button>
                     </div>
                   ) : (
-                    <div style={{ padding: '3rem 2rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-                      <Calendar size={48} style={{ color: 'rgba(255,255,255,0.1)', marginBottom: '1.5rem' }} />
-                      <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '1.1rem' }}>No active bookings found in your schedule.</p>
-                      <button onClick={() => setShowExplore(true)} className="btn-primary" style={{ background: 'var(--brand-primary)', margin: '0 auto', padding: '0.8rem 2rem' }}>
-                        <Plus size={18} /> Explore Classes
+                    <div style={{ padding: '4rem 2rem', textAlign: 'center', background: 'rgba(255,255,255,0.01)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                      <Calendar size={56} style={{ color: 'rgba(255,255,255,0.05)', marginBottom: '1.5rem' }} />
+                      <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: '1.2rem', fontWeight: 500 }}>No active bookings found in your schedule.</p>
+                      <button onClick={() => setShowExplore(true)} className="btn-primary" style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', margin: '0 auto', padding: '1rem 2.5rem', borderRadius: '14px', fontSize: '1rem', boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4)' }}>
+                        <Plus size={20} style={{ marginRight: '8px' }} /> Explore Classes
                       </button>
                     </div>
                   )}
+                </div>
+              </div>
+              
+              {/* Quick Announcements */}
+              {notifications.filter(n => n.type === 'BROADCAST').length > 0 && (
+                <div style={{ marginTop: '3rem' }}>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <Bell size={24} color="#8b5cf6" /> Gym Announcements
+                    </h3>
+                    <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', padding: 0 }}>
+                        {notifications.filter(n => n.type === 'BROADCAST').slice(0, 3).map(n => (
+                            <div key={n.id} className="glass-card-premium" style={{ padding: '1.5rem' }}>
+                                <h4 style={{ margin: 0, fontWeight: 700, color: '#fff' }}>{n.title}</h4>
+                                <p style={{ margin: '0.5rem 0', color: '#94a3b8', fontSize: '0.9rem' }}>{n.message}</p>
+                                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.2)' }}>{new Date(n.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'wellness' && (
+            <div className="fade-in">
+              <div style={{ marginBottom: '3rem' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Wellness Protocol</h1>
+                <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Personalized training and nutrition plans from your coaches.</p>
+              </div>
+
+              <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                {/* Workouts */}
+                <div className="glass-card-premium">
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', fontSize: '1.25rem' }}>
+                    <Dumbbell color="#8b5cf6" /> Active Workout Plans
+                  </h3>
+                  {wellnessData.workouts.length > 0 ? wellnessData.workouts.map(plan => (
+                    <div key={plan.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1rem' }}>
+                        <h4 style={{ margin: 0 }}>{plan.title}</h4>
+                        <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: '0.25rem 0 1rem 0' }}>Assigned by {plan.trainerName}</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {Array.isArray(plan.exercises) ? plan.exercises.map((ex, i) => (
+                                <div key={i} style={{ fontSize: '0.9rem', display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                                    <span>{ex.name}</span>
+                                    <span style={{ color: '#8b5cf6', fontWeight: 600 }}>{ex.sets}x{ex.reps}</span>
+                                </div>
+                            )) : <p>Custom protocol instructions provided.</p>}
+                        </div>
+                    </div>
+                  )) : <p style={{ color: '#64748b' }}>No workouts assigned yet.</p>}
+                </div>
+
+                {/* Diets */}
+                <div className="glass-card-premium">
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', fontSize: '1.25rem' }}>
+                    <BookOpen color="#ec4899" /> Nutrition & Macros
+                  </h3>
+                  {wellnessData.diets.length > 0 ? wellnessData.diets.map(plan => (
+                    <div key={plan.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1rem' }}>
+                        <h4 style={{ margin: 0 }}>{plan.title}</h4>
+                        <div style={{ display: 'flex', gap: '1rem', margin: '1rem 0' }}>
+                            {plan.macros && Object.entries(plan.macros).map(([k, v]) => (
+                                <div key={k} style={{ textAlign: 'center', flex: 1, padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase' }}>{k}</div>
+                                    <div style={{ fontWeight: 700 }}>{v}g</div>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ fontSize: '0.9rem' }}>
+                            {Array.isArray(plan.meals) ? plan.meals.map((m, i) => (
+                                <div key={i} style={{ marginBottom: '0.5rem', color: '#94a3b8' }}>• {m.name}: <span style={{ color: '#fff' }}>{m.content}</span></div>
+                            )) : <p>{plan.meals}</p>}
+                        </div>
+                    </div>
+                  )) : <p style={{ color: '#64748b' }}>No diet plans assigned yet.</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'progress' && (
+            <div className="fade-in">
+               <div style={{ marginBottom: '3rem' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Body Transformation</h1>
+                <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Log your metrics and track your evolution.</p>
+              </div>
+              
+              <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 2fr' }}>
+                {/* Log Form */}
+                <div className="glass-card-premium">
+                    <h3 style={{ marginBottom: '1.5rem' }}>Log Stats</h3>
+                    <form onSubmit={handleLogProgress} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div className="form-group">
+                            <label>Current Weight (kg)</label>
+                            <input type="number" step="0.1" value={progressForm.weight} onChange={e => setProgressForm({...progressForm, weight: e.target.value})} placeholder="75.5" required />
+                        </div>
+                        <div className="form-group">
+                            <label>Body Fat % (Optional)</label>
+                            <input type="number" step="0.1" value={progressForm.bodyFat} onChange={e => setProgressForm({...progressForm, bodyFat: e.target.value})} placeholder="15.2" />
+                        </div>
+                        <div className="form-group">
+                            <label>Notes</label>
+                            <textarea value={progressForm.notes} onChange={e => setProgressForm({...progressForm, notes: e.target.value})} placeholder="How are you feeling?" />
+                        </div>
+                        <button type="submit" className="btn-primary" disabled={isLoggingProgress} style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
+                            {isLoggingProgress ? 'Saving...' : 'Record Metrics'}
+                        </button>
+                    </form>
+                </div>
+
+                {/* History */}
+                <div className="glass-card-premium">
+                    <h3 style={{ marginBottom: '1.5rem' }}>Evolution Timeline</h3>
+                    <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                        {wellnessData.progress.length > 0 ? wellnessData.progress.map(log => (
+                            <div key={log.id} className="activity-item-premium" style={{ justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                                    <div style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', padding: '0.5rem 1rem', borderRadius: '12px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 800 }}>{log.weight}</div>
+                                        <div style={{ fontSize: '0.6rem', fontWeight: 700 }}>KG</div>
+                                    </div>
+                                    <div>
+                                        <p style={{ margin: 0, fontWeight: 700 }}>{log.bodyFat ? `${log.bodyFat}% Body Fat` : 'Weight Entry'}</p>
+                                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>{new Date(log.date).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                {log.notes && <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic', maxWidth: '200px' }}>"{log.notes}"</p>}
+                            </div>
+                        )) : <p style={{ color: '#64748b', textAlign: 'center', padding: '2rem' }}>No progress logs yet. Start your journey!</p>}
+                    </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'history' && (
+            <div className="fade-in">
+               <div style={{ marginBottom: '3rem' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Transaction & Activity History</h1>
+                <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Verify your past check-ins and subscription payments.</p>
+              </div>
+
+              <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                {/* Attendance */}
+                <div className="glass-card-premium">
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+                        <QrCode color="#10b981" /> Gym Visits
+                    </h3>
+                    <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                        {attendance.filter(a => a.memberId === tenant.id).map(a => (
+                            <div key={a.id} className="activity-item-premium">
+                                <CheckCircle color="#10b981" size={20} />
+                                <div>
+                                    <p style={{ margin: 0, fontWeight: 700 }}>Check-in Successful</p>
+                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>{new Date(a.checkIn).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        ))}
+                        {attendance.filter(a => a.memberId === tenant.id).length === 0 && <p style={{ color: '#64748b' }}>No check-in history found.</p>}
+                    </div>
+                </div>
+
+                {/* Payments */}
+                <div className="glass-card-premium">
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+                        <CreditCard color="#3b82f6" /> Payment Receipts
+                    </h3>
+                    <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                        {payments.filter(p => p.memberId === tenant.id).map(p => (
+                            <div key={p.id} className="activity-item-premium" style={{ justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                    <CreditCard color="#3b82f6" size={20} />
+                                    <div>
+                                        <p style={{ margin: 0, fontWeight: 700 }}>₹{p.amount}</p>
+                                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>{new Date(p.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                <span style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '4px 10px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                    {p.status}
+                                </span>
+                            </div>
+                        ))}
+                        {payments.filter(p => p.memberId === tenant.id).length === 0 && <p style={{ color: '#64748b' }}>No transaction records found.</p>}
+                    </div>
                 </div>
               </div>
             </div>
@@ -237,21 +586,6 @@ export default function MemberDashboard() {
               </div>
             </div>
           )}
-
-          {activeTab === 'progress' && (
-            <div className="fade-in">
-               <div style={{ marginBottom: '3rem' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Fitness Progress</h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Track your metrics and see your results over time.</p>
-              </div>
-              <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
-                <LineChart size={48} color="var(--brand-primary)" style={{ marginBottom: '1rem', opacity: 0.5 }} />
-                <h3>Progress Analytics Coming Soon</h3>
-                <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '1rem auto' }}>We're building a comprehensive tracking engine to help you visualize your body composition and lift PRS.</p>
-              </div>
-            </div>
-          )}
-
         </main>
       </div>
 
