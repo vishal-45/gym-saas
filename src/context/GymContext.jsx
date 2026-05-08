@@ -981,6 +981,46 @@ export function GymProvider({ children }) {
             } catch (err) {
                 console.error("Failed to mark as read");
             }
+        },
+        sendBroadcast: async (title, message, targetGroup = 'ALL') => {
+            try {
+                const res = await fetch(`${API_URL}/notifications/broadcast`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ title, message, targetGroup })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    setNotifications([data, ...notifications]);
+                    return { success: true };
+                }
+                return { success: false, error: data.error };
+            } catch (err) {
+                return { success: false, error: "Communication server offline." };
+            }
+        },
+        sendDirectNotification: async (userId, title, message) => {
+            try {
+                const res = await fetch(`${API_URL}/notifications/direct`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ userId, title, message })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    setNotifications([data, ...notifications]);
+                    return { success: true };
+                }
+                return { success: false, error: data.error };
+            } catch (err) {
+                return { success: false, error: "Communication server offline." };
+            }
         }
     }}>
       {children}

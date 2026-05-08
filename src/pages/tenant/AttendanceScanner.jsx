@@ -68,8 +68,8 @@ export default function AttendanceScanner() {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem', marginTop: '2rem' }}>
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', background: '#000' }}>
+      <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginTop: '2rem', paddingTop: 0 }}>
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', background: 'var(--bg-primary)', borderStyle: 'dashed' }}>
           {!isScanning && !status.message && (
             <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
               <Camera size={48} style={{ marginBottom: '1rem', opacity: 0.5 }} />
@@ -89,7 +89,7 @@ export default function AttendanceScanner() {
             }}>
               {status.type === 'success' && <CheckCircle size={48} color="#10b981" style={{ marginBottom: '1rem' }} />}
               {status.type === 'error' && <XCircle size={48} color="#ef4444" style={{ marginBottom: '1rem' }} />}
-              <h3 style={{ margin: 0, color: '#fff' }}>{status.message}</h3>
+              <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>{status.message}</h3>
               {scanResult && <p style={{ marginTop: '0.5rem', color: 'var(--text-secondary)' }}>Checked in at {new Date(scanResult.timestamp).toLocaleTimeString()}</p>}
             </div>
           )}

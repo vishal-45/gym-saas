@@ -170,15 +170,63 @@ export default function WellnessPage() {
                 <button className="btn-icon-round" onClick={() => setIsModalOpen(false)}><X/></button>
            </div>
            <div className="modal-body">
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Currently managing: <span style={{ color: 'white', fontWeight: 700 }}>{selectedMember?.name}</span></p>
-                {/* Simplified form for demo, as structured JSON inputs are complex */}
-                <div className="glass-card" style={{ textAlign: 'center', opacity: 0.8 }}>
-                    <AlertCircle size={32} style={{ marginBottom: '1rem' }} />
-                    <p>Structured Protocol Engine Active.</p>
-                    <p style={{ fontSize: '0.85rem', marginTop: '1rem' }}>Assigning standardized wellness profiles to personnel...</p>
-                </div>
+                {modalType === 'diet' ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div className="form-group">
+                            <label>Diet Protocol Title</label>
+                            <input type="text" placeholder="e.g. Summer Shred 2026" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', color: 'white', padding: '0.8rem', borderRadius: '10px' }} />
+                        </div>
+                        
+                        <div style={{ padding: '1.5rem', background: 'rgba(99,102,241,0.05)', borderRadius: '20px', border: '1px solid rgba(99,102,241,0.1)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--brand-primary)' }}>ELITE MACRO CALCULATOR</h4>
+                                <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>2400 CALS</span>
+                            </div>
+                            <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                                <div className="form-group">
+                                    <label style={{ fontSize: '0.7rem' }}>PROTEIN (G)</label>
+                                    <input type="number" defaultValue="180" style={{ padding: '0.5rem' }} />
+                                </div>
+                                <div className="form-group">
+                                    <label style={{ fontSize: '0.7rem' }}>CARBS (G)</label>
+                                    <input type="number" defaultValue="250" style={{ padding: '0.5rem' }} />
+                                </div>
+                                <div className="form-group">
+                                    <label style={{ fontSize: '0.7rem' }}>FATS (G)</label>
+                                    <input type="number" defaultValue="60" style={{ padding: '0.5rem' }} />
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '4px', marginTop: '1rem' }}>
+                                <div style={{ height: '6px', background: '#8b5cf6', flex: 4, borderRadius: '3px' }}></div>
+                                <div style={{ height: '6px', background: '#3b82f6', flex: 4, borderRadius: '3px' }}></div>
+                                <div style={{ height: '6px', background: '#f59e0b', flex: 2, borderRadius: '3px' }}></div>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Meal Structure</label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <input type="text" placeholder="Meal 1: Breakfast" style={{ flex: 1 }} />
+                                    <input type="text" placeholder="5 Eggs, 50g Oats" style={{ flex: 2 }} />
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <input type="text" placeholder="Meal 2: Post-Wkt" style={{ flex: 1 }} />
+                                    <input type="text" placeholder="100g Chicken, Rice" style={{ flex: 2 }} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="glass-card" style={{ textAlign: 'center', opacity: 0.8 }}>
+                        <AlertCircle size={32} style={{ marginBottom: '1rem' }} />
+                        <p>Structured Protocol Engine Active.</p>
+                        <p style={{ fontSize: '0.85rem', marginTop: '1rem' }}>Assigning standardized wellness profiles to personnel...</p>
+                    </div>
+                )}
+                
                 <button className="btn-primary" style={{ width: '100%', marginTop: '2rem', justifyContent: 'center' }} onClick={() => setIsModalOpen(false)}>
-                    Confirm Deployment
+                    Deploy Secure Protocol
                 </button>
            </div>
         </div>

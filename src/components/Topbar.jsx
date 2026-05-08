@@ -8,9 +8,8 @@ export default function Topbar({ onMenuClick }) {
     <header className="topbar">
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
         <button 
-            className="btn-icon-round mobile-only" 
+            className="mobile-menu-btn" 
             onClick={onMenuClick}
-            style={{ border: 'none', background: 'rgba(255,255,255,0.05)', display: 'none', padding: '8px' }}
         >
           <Menu size={20} />
         </button>
@@ -22,30 +21,39 @@ export default function Topbar({ onMenuClick }) {
                 placeholder="Global Search..." 
                 className="topbar-search"
                 style={{ 
-                    background: 'rgba(255,255,255,0.03)', 
-                    border: '1px solid var(--border-color)', 
-                    borderRadius: '20px', 
-                    padding: '0.45rem 1rem 0.45rem 2.5rem',
+                    background: '#f1f5f9', 
+                    border: 'none', 
+                    borderRadius: '12px', 
+                    padding: '0.6rem 1rem 0.6rem 2.75rem',
                     fontSize: '0.85rem',
                     width: '100%',
-                    color: 'white',
-                    outline: 'none'
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                    fontWeight: 500
                 }}
             />
         </div>
       </div>
       
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <button className="btn-icon-round" style={{ border: 'none', background: 'transparent', padding: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }}></div>
+        <button className="btn-icon-round" style={{ border: 'none', background: 'transparent', padding: '8px', cursor: 'pointer' }}>
             <Bell size={20} color="var(--text-secondary)" />
         </button>
 
-        <div className="user-profile">
+        <div className="user-profile" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div className="user-info">
-                <p>Admin Panel</p>
-                <p>System Level</p>
+                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700 }}>Admin Panel</p>
+                <p style={{ margin: 0, fontSize: '0.7rem', color: 'var(--brand-primary)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>System Level</p>
             </div>
-            <div className="avatar">AD</div>
+            <div className="avatar" style={{ 
+                background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))',
+                width: '42px',
+                height: '42px',
+                boxShadow: '0 4px 10px rgba(37, 99, 235, 0.2)',
+                border: '2px solid white',
+                marginRight: '1rem'
+            }}>AD</div>
         </div>
       </div>
     </header>

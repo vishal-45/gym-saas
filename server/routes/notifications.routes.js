@@ -38,20 +38,51 @@ router.post('/run-reminder-scan', verifyToken, requireGymOwner, async (req, res)
   }
 });
 
-// Broadcast Announcement
+// Send Direct Notification
+router.post('/direct', verifyToken, requireGymOwner, async (req, res) => {
+  try {
+    const tenantId = req.user.tenantId || req.user.id;
+    const { userId, title, message } = req.body;
+
+    if (!userId || !title || !message) {
+      return res.status(400).json({ error: "UserID, title, and message required." });
+    }
+
+    const notification = await prisma.notification.create({
+      data: {
+        tenantId,
+        userId,
+        title,
+        message,
+        type: "DIRECT",
+        status: "Unread"
+      }
+    });
+
+    res.status(201).json(notification);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to send notification." });
+  }
+});
+
+// Broadcast Announcement (Global or Segmented)
 router.post('/broadcast', verifyToken, requireGymOwner, async (req, res) => {
   try {
     const tenantId = req.user.tenantId || req.user.id;
-    const { title, message } = req.body;
+    const { title, message, targetGroup } = req.body; // targetGroup: 'ALL' | 'MEMBER' | 'TRAINER' | 'STAFF'
 
     if (!title || !message) return res.status(400).json({ error: "Title and message required." });
+
+    const broadcastType = targetGroup && targetGroup !== 'ALL' 
+      ? `BROADCAST_${targetGroup}` 
+      : "BROADCAST";
 
     const broadcast = await prisma.notification.create({
       data: {
         tenantId,
         title,
         message,
-        type: "BROADCAST",
+        type: broadcastType,
         userId: null
       }
     });

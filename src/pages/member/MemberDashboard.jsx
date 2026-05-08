@@ -15,6 +15,7 @@ export default function MemberDashboard() {
   
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showExplore, setShowExplore] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [bookingStatus, setBookingStatus] = useState({ id: null, loading: false });
@@ -200,14 +201,30 @@ export default function MemberDashboard() {
         }
         .member-sidebar {
           width: 260px;
-          background: rgba(15, 17, 21, 0.6);
+          background: rgba(15, 17, 21, 0.95);
           backdrop-filter: blur(20px);
           border-right: 1px solid rgba(255,255,255,0.05);
           position: fixed;
           height: 100vh;
           display: flex;
           flex-direction: column;
-          z-index: 100;
+          z-index: 200;
+          transition: transform 0.3s ease;
+        }
+        @media (max-width: 1024px) {
+          .member-sidebar {
+            transform: translateX(-100%);
+          }
+          .member-sidebar.open {
+            transform: translateX(0);
+          }
+          .member-main {
+            margin-left: 0 !important;
+            padding: 1.5rem !important;
+          }
+          .dashboard-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
         .nav-button {
           display: flex;
@@ -235,27 +252,40 @@ export default function MemberDashboard() {
         }
       `}</style>
       <div className={`premium-bg ${(showExplore || showQR) ? 'blur-background' : ''}`} style={{ display: 'flex', minHeight: '100vh' }}>
+        {/* Mobile Overlay */}
+        {isSidebarOpen && (
+          <div 
+            onClick={() => setIsSidebarOpen(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 195, backdropFilter: 'blur(4px)' }}
+          />
+        )}
+
         {/* Sidebar */}
-        <aside className="member-sidebar">
-          <div style={{ padding: '2.5rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Dumbbell color="#8b5cf6" size={32} />
-            <span style={{ fontWeight: 900, fontSize: '1.5rem', letterSpacing: '-1px' }}>Member Portal</span>
+        <aside className={`member-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <div style={{ padding: '2.5rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <Dumbbell color="#8b5cf6" size={32} />
+              <span style={{ fontWeight: 900, fontSize: '1.25rem', letterSpacing: '-1px' }}>Member Portal</span>
+            </div>
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(false)}>
+              <X size={20} />
+            </button>
           </div>
 
           <nav style={{ padding: '0 1rem', flex: 1 }}>
-            <button onClick={() => setActiveTab('overview')} className={`nav-button ${activeTab === 'overview' ? 'active' : ''}`}>
+            <button onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }} className={`nav-button ${activeTab === 'overview' ? 'active' : ''}`}>
               <LayoutDashboard size={20} /> Overview
             </button>
-            <button onClick={() => setActiveTab('wellness')} className={`nav-button ${activeTab === 'wellness' ? 'active' : ''}`}>
+            <button onClick={() => { setActiveTab('wellness'); setIsSidebarOpen(false); }} className={`nav-button ${activeTab === 'wellness' ? 'active' : ''}`}>
               <Heart size={20} /> Wellness
             </button>
-            <button onClick={() => setActiveTab('vault')} className={`nav-button ${activeTab === 'vault' ? 'active' : ''}`}>
+            <button onClick={() => { setActiveTab('vault'); setIsSidebarOpen(false); }} className={`nav-button ${activeTab === 'vault' ? 'active' : ''}`}>
               <BookOpen size={20} /> The Vault
             </button>
-            <button onClick={() => setActiveTab('progress')} className={`nav-button ${activeTab === 'progress' ? 'active' : ''}`}>
+            <button onClick={() => { setActiveTab('progress'); setIsSidebarOpen(false); }} className={`nav-button ${activeTab === 'progress' ? 'active' : ''}`}>
               <LineChart size={20} /> Progress
             </button>
-            <button onClick={() => setActiveTab('history')} className={`nav-button ${activeTab === 'history' ? 'active' : ''}`}>
+            <button onClick={() => { setActiveTab('history'); setIsSidebarOpen(false); }} className={`nav-button ${activeTab === 'history' ? 'active' : ''}`}>
               <History size={20} /> History
             </button>
           </nav>
@@ -271,6 +301,16 @@ export default function MemberDashboard() {
         </aside>
 
         <main className="member-main">
+          {/* Mobile Header */}
+          <div className="mobile-only" style={{ display: 'none', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+              <Menu size={24} />
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Dumbbell color="#8b5cf6" size={24} />
+              <span style={{ fontWeight: 800 }}>CoreFit</span>
+            </div>
+          </div>
           
           {activeTab === 'overview' && (
             <div className="fade-in">
@@ -295,11 +335,11 @@ export default function MemberDashboard() {
                 </div>
               ))}
 
-              <div style={{ marginBottom: '4rem', marginTop: '1rem' }}>
-                <h1 style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-1px' }}>
+              <div style={{ marginBottom: '3rem', marginTop: '1rem' }}>
+                <h1 style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-1px' }}>
                   Welcome back, <span className="animate-gradient-text">{tenant?.name?.split(' ')[0]}!</span>
                 </h1>
-                <p style={{ color: '#94a3b8', fontSize: '1.25rem', fontWeight: 400 }}>Your personal fitness dashboard and upcoming schedule.</p>
+                <p style={{ color: '#94a3b8', fontSize: '1.1rem', fontWeight: 400 }}>Your personal fitness dashboard and upcoming schedule.</p>
               </div>
 
               <div className="dashboard-grid fade-in" style={{ gridTemplateColumns: '1fr 1.8fr', gap: '2.5rem' }}>
@@ -396,26 +436,47 @@ export default function MemberDashboard() {
 
           {activeTab === 'wellness' && (
             <div className="fade-in">
-              <div style={{ marginBottom: '3rem' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Wellness Protocol</h1>
-                <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Personalized training and nutrition plans from your coaches.</p>
+              <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Wellness Protocol</h1>
+                    <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Personalized training and nutrition plans from your coaches.</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 700, letterSpacing: '1px' }}>TODAY'S ADHERENCE</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 900, color: '#8b5cf6' }}>85%</div>
+                </div>
               </div>
 
-              <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+              <div className="dashboard-grid" style={{ gridTemplateColumns: '1.2fr 0.8fr', gap: '2.5rem' }}>
                 {/* Workouts */}
                 <div className="glass-card-premium">
-                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', fontSize: '1.25rem' }}>
-                    <Dumbbell color="#8b5cf6" /> Active Workout Plans
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem', fontSize: '1.5rem', fontWeight: 800 }}>
+                    <Dumbbell color="#8b5cf6" size={28} /> Training Program
                   </h3>
                   {wellnessData.workouts.length > 0 ? wellnessData.workouts.map(plan => (
-                    <div key={plan.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1rem' }}>
-                        <h4 style={{ margin: 0 }}>{plan.title}</h4>
-                        <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: '0.25rem 0 1rem 0' }}>Assigned by {plan.trainerName}</p>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div key={plan.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <div>
+                                <h4 style={{ margin: 0, fontSize: '1.25rem' }}>{plan.title}</h4>
+                                <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '0.25rem 0 0 0' }}>Assigned by {plan.trainerName}</p>
+                            </div>
+                            <span style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', padding: '0.5rem 1rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                {Array.isArray(plan.exercises) ? plan.exercises.length : 0} EXERCISES
+                            </span>
+                        </div>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {Array.isArray(plan.exercises) ? plan.exercises.map((ex, i) => (
-                                <div key={i} style={{ fontSize: '0.9rem', display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
-                                    <span>{ex.name}</span>
-                                    <span style={{ color: '#8b5cf6', fontWeight: 600 }}>{ex.sets}x{ex.reps}</span>
+                                <div key={i} className="activity-item-premium" style={{ margin: 0, padding: '1rem 1.5rem', cursor: 'pointer' }}>
+                                    <div style={{ width: '24px', height: '24px', borderRadius: '6px', border: '2px solid #8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {/* Mock check logic */}
+                                        <div style={{ width: '12px', height: '12px', background: i % 3 === 0 ? '#8b5cf6' : 'transparent', borderRadius: '2px' }}></div>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <span style={{ fontWeight: 600, fontSize: '1rem' }}>{ex.name}</span>
+                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{ex.sets} Sets • {ex.reps} Reps • 60s Rest</div>
+                                    </div>
+                                    <Play size={16} color="#8b5cf6" style={{ opacity: 0.5 }} />
                                 </div>
                             )) : <p>Custom protocol instructions provided.</p>}
                         </div>
@@ -424,28 +485,60 @@ export default function MemberDashboard() {
                 </div>
 
                 {/* Diets */}
-                <div className="glass-card-premium">
-                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', fontSize: '1.25rem' }}>
-                    <BookOpen color="#ec4899" /> Nutrition & Macros
-                  </h3>
-                  {wellnessData.diets.length > 0 ? wellnessData.diets.map(plan => (
-                    <div key={plan.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1rem' }}>
-                        <h4 style={{ margin: 0 }}>{plan.title}</h4>
-                        <div style={{ display: 'flex', gap: '1rem', margin: '1rem 0' }}>
-                            {plan.macros && Object.entries(plan.macros).map(([k, v]) => (
-                                <div key={k} style={{ textAlign: 'center', flex: 1, padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
-                                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase' }}>{k}</div>
-                                    <div style={{ fontWeight: 700 }}>{v}g</div>
-                                </div>
-                            ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                    <div className="glass-card-premium">
+                      <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem', fontSize: '1.5rem', fontWeight: 800 }}>
+                        <Heart color="#ec4899" size={28} /> Fuel & Nutrition
+                      </h3>
+                      {wellnessData.diets.length > 0 ? wellnessData.diets.map(plan => (
+                        <div key={plan.id}>
+                            <h4 style={{ margin: 0, fontSize: '1.1rem', marginBottom: '1.5rem' }}>{plan.title}</h4>
+                            
+                            {/* Macro Visualization */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                                {plan.macros && Object.entries(plan.macros).map(([k, v]) => {
+                                    const colors = { protein: '#8b5cf6', carbs: '#3b82f6', fats: '#f59e0b' };
+                                    const percentage = k === 'protein' ? 40 : (k === 'carbs' ? 40 : 20);
+                                    return (
+                                        <div key={k}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+                                                <span style={{ textTransform: 'uppercase', color: '#94a3b8' }}>{k}</span>
+                                                <span>{v}g</span>
+                                            </div>
+                                            <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                                                <div style={{ height: '100%', width: `${percentage}%`, background: colors[k] || '#8b5cf6', boxShadow: `0 0 10px ${colors[k]}44` }}></div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                {Array.isArray(plan.meals) ? plan.meals.map((m, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <div style={{ background: 'rgba(236, 72, 153, 0.1)', color: '#ec4899', padding: '0.4rem 0.8rem', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>
+                                            MEAL {i+1}
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{m.name}</div>
+                                            <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.2rem' }}>{m.content}</div>
+                                        </div>
+                                    </div>
+                                )) : <p>{plan.meals}</p>}
+                            </div>
                         </div>
-                        <div style={{ fontSize: '0.9rem' }}>
-                            {Array.isArray(plan.meals) ? plan.meals.map((m, i) => (
-                                <div key={i} style={{ marginBottom: '0.5rem', color: '#94a3b8' }}>• {m.name}: <span style={{ color: '#fff' }}>{m.content}</span></div>
-                            )) : <p>{plan.meals}</p>}
-                        </div>
+                      )) : <p style={{ color: '#64748b' }}>No diet plans assigned yet.</p>}
                     </div>
-                  )) : <p style={{ color: '#64748b' }}>No diet plans assigned yet.</p>}
+
+                    {/* Quick Tips */}
+                    <div className="glass-card-premium" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), transparent)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+                        <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                            <Bell size={18} color="#8b5cf6" /> Coach's Brief
+                        </h4>
+                        <p style={{ fontSize: '0.9rem', color: '#94a3b8', lineHeight: '1.6' }}>
+                            "Focus on explosive tempo today. Keep your rest periods under 60 seconds to maintain metabolic stress. Drink 1L extra water."
+                        </p>
+                    </div>
                 </div>
               </div>
             </div>

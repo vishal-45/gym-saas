@@ -147,6 +147,16 @@ router.post('/:id/payout', verifyToken, async (req, res) => {
             }
         });
 
+        // Audit Log entry for financial compliance
+        await prisma.auditLog.create({
+            data: {
+                adminId: req.user.id,
+                action: 'TRAINER_PAYOUT',
+                target: trainer.name,
+                details: `Processed payout of ₹${amount} for ${trainer.name}.`
+            }
+        });
+
         res.json({ success: true, payout });
     } catch (err) {
         console.error(err);

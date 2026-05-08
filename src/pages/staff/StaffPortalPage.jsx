@@ -66,6 +66,7 @@ export default function StaffPortalPage() {
   const [isEditMemberModalOpen, setIsEditMemberModalOpen] = useState(false);
   const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('workouts'); 
+  const [macroCalc, setMacroCalc] = useState({ p: 180, c: 250, f: 60 });
 
   // Derived Data
   const myMembers = isTrainer
@@ -1131,12 +1132,20 @@ export default function StaffPortalPage() {
             <div className="modal-body" style={{ padding: '2rem', maxHeight: 'calc(100vh - 250px)', overflowY: 'auto' }}>
                 {activeTab === 'workouts' && (
                 <div className="fade-in">
-                    <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1.5rem', borderRadius: '20px', marginBottom: '2rem' }}>
-                        <h4 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Plus size={18} color="#6366f1" /> Deploy Protocol</h4>
-                        <form onSubmit={handleCreateWorkout} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <input type="text" name="title" placeholder="e.g. Strength Phase - Week 1" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '0.8rem', borderRadius: '10px', color: 'white' }} />
-                        <textarea name="exercises" placeholder="Exercises (List one per line)..." rows="4" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '0.8rem', borderRadius: '10px', color: 'white', resize: 'none' }}></textarea>
-                        <button type="submit" style={{ padding: '0.8rem', borderRadius: '10px', border: 'none', background: '#6366f1', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Publish Workout</button>
+                    <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '2rem', borderRadius: '24px', marginBottom: '2rem' }}>
+                        <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Plus size={20} color="#6366f1" /> Deploy Training Protocol</h4>
+                        <form onSubmit={handleCreateWorkout} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                          <div className="form-group">
+                            <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: '0.5rem', display: 'block' }}>PROGRAM TITLE</label>
+                            <input type="text" name="title" placeholder="e.g. Strength Phase - Week 1" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', width: '100%' }} />
+                          </div>
+                          <div className="form-group">
+                            <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: '0.5rem', display: 'block' }}>EXERCISE SEQUENCE</label>
+                            <textarea name="exercises" placeholder="Ex: Bicep Curls 3 sets 10 reps&#10;Ex: Squats 4 sets 12 reps..." rows="6" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', resize: 'none', width: '100%', lineHeight: '1.6' }}></textarea>
+                          </div>
+                          <button type="submit" style={{ padding: '1rem', borderRadius: '12px', border: 'none', background: '#6366f1', color: 'white', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(99, 102, 241, 0.2)' }}>
+                            <ShieldCheck size={18} /> Publish to Athlete Dashboard
+                          </button>
                         </form>
                     </div>
                     <h4 style={{ marginBottom: '1rem', fontWeight: 800 }}>Prescribed Sessions</h4>
@@ -1156,12 +1165,49 @@ export default function StaffPortalPage() {
                 )}
                 {activeTab === 'diets' && (
                 <div className="fade-in">
-                    <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '1.5rem', borderRadius: '20px', marginBottom: '2rem' }}>
-                        <h4 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Utensils size={18} color="#10b981" /> Nutrition Plan</h4>
-                        <form onSubmit={handleCreateDiet} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <input type="text" name="title" placeholder="e.g. Cutting Macros - 2200 kcal" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '0.8rem', borderRadius: '10px', color: 'white' }} />
-                        <textarea name="meals" placeholder="Meal Breakdown..." rows="4" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '0.8rem', borderRadius: '10px', color: 'white', resize: 'none' }}></textarea>
-                        <button type="submit" style={{ padding: '0.8rem', borderRadius: '10px', border: 'none', background: '#10b981', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Save Nutrition</button>
+                    <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '2rem', borderRadius: '24px', marginBottom: '2rem' }}>
+                        <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Utensils size={20} color="#10b981" /> Elite Nutrition Deployment</h4>
+                        
+                        {/* Elite Macro Calculator - Live Intelligence */}
+                        <div style={{ padding: '1.5rem', background: '#09090b', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1.5rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', letterSpacing: '1px' }}>LIVE RATIO CALCULATION</span>
+                                <span style={{ fontSize: '0.7rem', color: '#fff', fontWeight: 900 }}>EST. {(macroCalc.p * 4 + macroCalc.c * 4 + macroCalc.f * 9)} KCAL</span>
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <label style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', marginBottom: '0.25rem' }}>PROTEIN (G)</label>
+                                    <input type="number" value={macroCalc.p} onChange={e => setMacroCalc({...macroCalc, p: parseInt(e.target.value) || 0})} style={{ background: 'transparent', border: '1px solid rgba(139, 92, 246, 0.3)', color: 'white', padding: '0.5rem', borderRadius: '8px', width: '100%' }} />
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', marginBottom: '0.25rem' }}>CARBS (G)</label>
+                                    <input type="number" value={macroCalc.c} onChange={e => setMacroCalc({...macroCalc, c: parseInt(e.target.value) || 0})} style={{ background: 'transparent', border: '1px solid rgba(59, 130, 246, 0.3)', color: 'white', padding: '0.5rem', borderRadius: '8px', width: '100%' }} />
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', marginBottom: '0.25rem' }}>FATS (G)</label>
+                                    <input type="number" value={macroCalc.f} onChange={e => setMacroCalc({...macroCalc, f: parseInt(e.target.value) || 0})} style={{ background: 'transparent', border: '1px solid rgba(245, 158, 11, 0.3)', color: 'white', padding: '0.5rem', borderRadius: '8px', width: '100%' }} />
+                                </div>
+                            </div>
+                            {/* Dynamic Ratio Bar */}
+                            <div style={{ display: 'flex', gap: '4px', marginTop: '1.25rem', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
+                                <div style={{ flex: (macroCalc.p * 4) || 1, background: '#8b5cf6', transition: 'all 0.5s ease' }}></div>
+                                <div style={{ flex: (macroCalc.c * 4) || 1, background: '#3b82f6', transition: 'all 0.5s ease' }}></div>
+                                <div style={{ flex: (macroCalc.f * 9) || 1, background: '#f59e0b', transition: 'all 0.5s ease' }}></div>
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleCreateDiet} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                          <div className="form-group">
+                            <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: '0.5rem', display: 'block' }}>PROTOCOL NAME</label>
+                            <input type="text" name="title" placeholder="e.g. Cutting Macros - 2200 kcal" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', width: '100%' }} />
+                          </div>
+                          <div className="form-group">
+                            <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: '0.5rem', display: 'block' }}>MEAL STRUCTURE</label>
+                            <textarea name="meals" placeholder="Meal 1: Oats & Whey&#10;Meal 2: Chicken & Rice..." rows="4" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', resize: 'none', width: '100%', lineHeight: '1.6' }}></textarea>
+                          </div>
+                          <button type="submit" style={{ padding: '1rem', borderRadius: '12px', border: 'none', background: '#10b981', color: 'white', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(16, 185, 129, 0.2)' }}>
+                            <Target size={18} /> Lock Transformation Plan
+                          </button>
                         </form>
                     </div>
                     <h4 style={{ marginBottom: '1rem', fontWeight: 800 }}>Active Diet Logs</h4>

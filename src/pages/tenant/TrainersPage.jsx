@@ -158,6 +158,39 @@ export default function TrainersPage() {
           </div>
         </div>
 
+        {/* Global Payroll Summary Bar */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+            <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem', borderLeft: '4px solid #8b5cf6' }}>
+                <div style={{ background: 'rgba(139, 92, 246, 0.1)', width: '50px', height: '50px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Award size={24} color="#8b5cf6" />
+                </div>
+                <div>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Active Professionals</p>
+                    <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{trainers.length}</p>
+                </div>
+            </div>
+            <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem', borderLeft: '4px solid #10b981' }}>
+                <div style={{ background: 'rgba(16, 185, 129, 0.1)', width: '50px', height: '50px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Calculator size={24} color="#10b981" />
+                </div>
+                <div>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Total Monthly Liability</p>
+                    <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>
+                        ₹{trainers.reduce((acc, t) => acc + (t.baseSalary || 0), 0).toLocaleString()}
+                    </p>
+                </div>
+            </div>
+            <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem', borderLeft: '4px solid #f59e0b' }}>
+                <div style={{ background: 'rgba(245, 158, 11, 0.1)', width: '50px', height: '50px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Banknote size={24} color="#f59e0b" />
+                </div>
+                <div>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Pending Commissions</p>
+                    <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>Calculated Live</p>
+                </div>
+            </div>
+        </div>
+
         <div className="members-grid">
           {isTrainersLoading ? (
              <div className="loading-state">Syncing Personnel Data...</div>

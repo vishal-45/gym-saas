@@ -137,12 +137,28 @@ router.put('/:id', verifyToken, async (req, res) => {
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const tenantId = req.user.tenantId || req.user.id;
+    
+    // Fetch member name for audit log before deleting
+    const member = await prisma.member.findFirst({ where: { id: req.params.id, tenantId } });
+    if (!member) return res.status(404).json({ error: "Member not found." });
+
     await prisma.member.deleteMany({
       where: { 
         id: req.params.id,
         tenantId 
       }
     });
+
+    // Audit Log Entry
+    await prisma.auditLog.create({
+        data: {
+            adminId: req.user.id,
+            action: 'DELETE_MEMBER',
+            target: member.name,
+            details: `Member ${member.email} was purged from the system by ${req.user.role || 'OWNER'}.`
+        }
+    });
+
     res.json({ success: true });
   } catch(err) {
     res.status(500).json({ error: "Delete failed." });

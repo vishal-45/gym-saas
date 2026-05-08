@@ -14,6 +14,8 @@ import StaffPage from './pages/tenant/StaffPage';
 import PlansPage from './pages/tenant/PlansPage';
 import LeadsPage from './pages/tenant/LeadsPage';
 import WellnessPage from './pages/tenant/WellnessPage';
+import AuraKiosk from './pages/tenant/AuraKiosk';
+import AnnouncementsPage from './pages/tenant/AnnouncementsPage';
 
 // Lazy loaded components (isolated from bundle failure)
 const AttendanceScanner = lazy(() => import('./pages/tenant/AttendanceScanner'));
@@ -41,6 +43,8 @@ const LoadingFallback = () => (
   </div>
 );
 
+import LandingPage from './pages/LandingPage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -48,6 +52,9 @@ function App() {
       <GymProvider>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
+            {/* Public Marketing Landing Page */}
+            <Route path="/" element={<LandingPage />} />
+
             {/* Super Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
@@ -74,7 +81,7 @@ function App() {
             <Route path="/staff-portal" element={<StaffPortalPage />} />
 
             {/* Secure Tenant Dashboard Routes (Protected by JWT State) */}
-            <Route path="/" element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<ProtectedRoute />}>
               <Route element={<MainLayout />}>
                 <Route index element={<DashboardPage />} />
                 <Route path="members" element={<MembersPage />} />
@@ -88,8 +95,13 @@ function App() {
                 <Route path="leads" element={<LeadsPage />} />
                 <Route path="wellness" element={<WellnessPage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="kiosk" element={<AuraKiosk />} />
+                <Route path="announcements" element={<AnnouncementsPage />} />
               </Route>
             </Route>
+
+            {/* Redirect root dashboard if needed */}
+            <Route path="/dashboard" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Suspense>
       </GymProvider>

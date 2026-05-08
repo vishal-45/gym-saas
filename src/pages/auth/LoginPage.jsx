@@ -23,7 +23,7 @@ export default function LoginPage() {
       if (res.role === 'SUPER_ADMIN') {
         navigate('/admin');
       } else {
-        navigate('/');
+        navigate('/dashboard');
       }
     } else {
       setErrorMsg(res.error);

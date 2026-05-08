@@ -95,7 +95,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', marginTop: '2rem' }}>
+      <div className="dashboard-charts-grid" style={{ display: 'grid', gap: '2rem', marginTop: '2rem' }}>
         
         {/* Main Analytics Block */}
         <div className="glass-card" style={{ minHeight: '400px' }}>
@@ -113,18 +113,18 @@ export default function DashboardPage() {
               <AreaChart data={revenueData}>
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="var(--brand-primary)" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="var(--brand-primary)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                 <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis hide />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', border: '1px solid var(--border-color)', borderRadius: '12px' }}
-                  itemStyle={{ color: '#3b82f6' }}
+                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: 'var(--shadow-md)' }}
+                  itemStyle={{ color: 'var(--brand-primary)' }}
                 />
-                <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
+                <Area type="monotone" dataKey="revenue" stroke="var(--brand-primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -149,7 +149,7 @@ export default function DashboardPage() {
                         <button 
                             className="btn-icon-round" 
                             style={{ background: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24' }}
-                            onClick={() => navigate('/members')}
+                            onClick={() => navigate('/dashboard/members')}
                         >
                             <ArrowUpRight size={14} />
                         </button>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
                 )}
             </div>
 
-            <button className="btn-secondary" style={{ width: '100%', marginTop: '1.5rem', justifyContent: 'center' }} onClick={() => navigate('/members')}>
+            <button className="btn-secondary" style={{ width: '100%', marginTop: '1.5rem', justifyContent: 'center' }} onClick={() => navigate('/dashboard/members')}>
                 View All Members
             </button>
         </div>

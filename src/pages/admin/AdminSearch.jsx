@@ -85,8 +85,23 @@ export default function AdminSearch() {
                   </td>
                   <td>{new Date(member.createdAt).toLocaleDateString()}</td>
                   <td>
-                    <button className="btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}>
-                       <ExternalLink size={14} /> Direct Support
+                    <button 
+                      style={{ 
+                        padding: '0.4rem 0.8rem', 
+                        fontSize: '0.75rem',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'white',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        cursor: 'pointer',
+                        fontWeight: 600
+                      }}
+                      className="hover-lift"
+                    >
+                       <ExternalLink size={14} color="#8b5cf6" /> Direct Support
                     </button>
                   </td>
                 </tr>

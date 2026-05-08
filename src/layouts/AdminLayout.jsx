@@ -1,7 +1,12 @@
+import { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { ShieldAlert, Server, Building2, Activity as ActivityIcon, History, Search } from 'lucide-react';
+import { ShieldAlert, Server, Building2, Activity as ActivityIcon, History, Search, Menu, X } from 'lucide-react';
 
 export default function AdminLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => setIsSidebarOpen(false);
+
   const adminNavItems = [
     { id: 'dashboard', path: '/admin', label: 'Platform Overview', icon: <ActivityIcon size={20} /> },
     { id: 'tenants', path: '/admin/tenants', label: 'Gym Businesses', icon: <Building2 size={20} /> },
@@ -10,14 +15,24 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="app-container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#09090b', color: 'white' }}>
-      {console.log("AdminLayout rendering")}
-      <aside className="sidebar" style={{ borderRightColor: '#1e293b' }}>
+    <div className="app-container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          onClick={closeSidebar}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 95, backdropFilter: 'blur(4px)' }}
+        />
+      )}
+
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header" style={{ borderBottomColor: '#1e293b' }}>
-          <ShieldAlert className="logo-icon" color="#8b5cf6" size={28} />
-          <span className="logo-text" style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <ShieldAlert className="logo-icon" color="var(--brand-primary)" size={28} />
+          <span className="logo-text" style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             SUPER ADMIN
           </span>
+          <button className="mobile-menu-btn" onClick={closeSidebar} style={{ marginLeft: 'auto' }}>
+            <X size={20} />
+          </button>
         </div>
         
         <nav className="nav-menu">
@@ -26,8 +41,9 @@ export default function AdminLayout() {
               key={item.id}
               to={item.path}
               end={item.path === '/admin'}
+              onClick={closeSidebar}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-              style={({ isActive }) => isActive ? { backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', borderColor: 'rgba(139, 92, 246, 0.2)' } : {}}
+            >
             >
               {item.icon}
               <span>{item.label}</span>
@@ -37,11 +53,20 @@ export default function AdminLayout() {
       </aside>
 
       <main className="main-content">
-        <header className="topbar" style={{ backgroundColor: 'rgba(15, 23, 42, 0.8)', borderBottomColor: '#1e293b' }}>
-          <h1 className="page-title">System Control Panel</h1>
-          <div className="user-profile" style={{ borderColor: '#8b5cf6' }}>
-            <span style={{ fontSize: '0.875rem', fontWeight: 500, paddingRight: '0.5rem' }}>God Mode</span>
-            <div className="avatar" style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef)' }}>SA</div>
+        <header className="topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button className="mobile-menu-btn" onClick={toggleSidebar}>
+                <Menu size={20} />
+            </button>
+            <h1 className="page-title" style={{ fontSize: '1.25rem', margin: 0 }}>Control Panel</h1>
+          </div>
+          
+          <div className="user-profile" style={{ borderColor: 'var(--brand-primary)' }}>
+            <div className="user-info">
+              <p>God Mode</p>
+              <p>System Level</p>
+            </div>
+            <div className="avatar" style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>SA</div>
           </div>
         </header>
 

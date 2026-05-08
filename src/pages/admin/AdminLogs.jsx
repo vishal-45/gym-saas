@@ -40,8 +40,25 @@ export default function AdminLogs() {
           <h2 style={{ fontSize: '1.8rem', fontWeight: 700 }}>Platform Audit History</h2>
           <p style={{ color: 'var(--text-secondary)' }}>Security ledger recording all administrative actions in the ecosystem.</p>
         </div>
-        <button onClick={fetchLogs} className="btn-secondary">
-          <Activity size={18} /> Refresh Log
+        <button 
+          onClick={fetchLogs} 
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            color: 'white',
+            padding: '0.6rem 1.25rem',
+            borderRadius: '10px',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          className="hover-lift"
+        >
+          <Activity size={18} color="#8b5cf6" /> Refresh Log
         </button>
       </div>
 
