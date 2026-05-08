@@ -51,4 +51,10 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+// Global Error Handler for Serverless Stability
+app.use((err, req, res, next) => {
+  console.error("Serverless Runtime Error:", err);
+  res.status(500).json({ error: "Internal Server Error", details: err.message });
+});
+
 export default app;
