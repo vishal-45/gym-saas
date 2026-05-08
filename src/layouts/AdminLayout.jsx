@@ -44,7 +44,6 @@ export default function AdminLayout() {
               onClick={closeSidebar}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
-            >
               {item.icon}
               <span>{item.label}</span>
             </NavLink>
