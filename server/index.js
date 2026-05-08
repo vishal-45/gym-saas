@@ -45,16 +45,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'CoreFitness SaaS Backend Engine Online' });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Secure Authentication Engine running on port ${PORT}`);
-  
-  // Start Automated Retention Engine (Runs every 24 hours)
-  console.log("🤖 Automated Retention Engine Initialized.");
-  setInterval(async () => {
-    try {
-      await runGlobalRetentionScan();
-    } catch (err) {
-      console.error("Critical Failure in Automated Retention Engine:", err);
-    }
-  }, 24 * 60 * 60 * 1000); // 24 Hours
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Secure Authentication Engine running on port ${PORT}`);
+  });
+}
+
+export default app;
