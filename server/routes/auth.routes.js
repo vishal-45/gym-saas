@@ -79,7 +79,7 @@ router.post('/login', async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal Server Error during authentication." });
+    res.status(500).json({ error: "Internal Server Error during authentication.", details: err.message, stack: process.env.NODE_ENV !== 'production' ? err.stack : undefined });
   }
 });
 

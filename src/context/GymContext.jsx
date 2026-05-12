@@ -46,7 +46,7 @@ export function GymProvider({ children }) {
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Authentication offline');
+      if (!res.ok) throw new Error(data.details || data.error || 'Authentication offline');
       
       localStorage.setItem('gym_auth_token', data.token);
       setToken(data.token);
