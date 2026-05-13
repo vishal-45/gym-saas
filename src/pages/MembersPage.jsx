@@ -107,7 +107,7 @@ export default function MembersPage() {
     e.preventDefault();
     setIsBroadcasting(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/notifications/broadcast`, {
+      const res = await fetch(`${import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api')}/notifications/broadcast`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

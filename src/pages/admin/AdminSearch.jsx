@@ -12,7 +12,7 @@ export default function AdminSearch() {
     e.preventDefault();
     if (!query) return;
     
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const API_URL = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
     setIsSearching(true);
     try {
       const res = await fetch(`${API_URL}/admin/members/search?q=${query}`, {

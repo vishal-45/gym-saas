@@ -9,7 +9,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const API_URL = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
       try {
         const res = await fetch(`${API_URL}/admin/stats`, {
           headers: { 'Authorization': `Bearer ${token}` }

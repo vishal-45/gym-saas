@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, Plus, UserPlus, X, Award, AlertCircle, Edit, Trash2, Dumbbell, Banknote, Percent, Calculator, ChevronDown, ChevronUp } from 'lucide-react';
 import { useGymContext } from '../../context/GymContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
 
 export default function TrainersPage() {
   const { trainers, isTrainersLoading, addTrainer, updateTrainer, deleteTrainer, members, token } = useGymContext();
