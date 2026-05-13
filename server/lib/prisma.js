@@ -7,7 +7,8 @@ import ws from 'ws';
 neonConfig.webSocketConstructor = ws;
 
 // Initialize connection pool
-const connectionString = `${process.env.DATABASE_URL}`;
+// Note: We strip pgbouncer=true because the WebSocket driver handles its own pooling
+const connectionString = `${process.env.DATABASE_URL}`.replace('pgbouncer=true', '').replace('&&', '&').replace('?&', '?');
 const pool = new Pool({ connectionString });
 const adapter = new PrismaNeon(pool);
 
