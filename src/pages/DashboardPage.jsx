@@ -1,4 +1,4 @@
-import { Users, CreditCard, Activity, TrendingUp, TrendingDown, Clock, Calendar, IndianRupee, BarChart3 } from 'lucide-react';
+import { Users, CreditCard, Activity, TrendingUp, TrendingDown, Clock, Calendar, IndianRupee, BarChart3, ArrowUpRight } from 'lucide-react';
 import { useGymContext } from '../context/GymContext';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';

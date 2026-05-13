@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGymContext } from '../../context/GymContext';
-import { LogOut, Dumbbell, Calendar, Award, X, Users, CheckCircle, Plus, QrCode, BookOpen, LineChart, Play, FileText, ExternalLink, CreditCard, Bell, LayoutDashboard, Heart, History } from 'lucide-react';
+import { LogOut, Dumbbell, Calendar, Award, X, Users, CheckCircle, Plus, QrCode, BookOpen, LineChart, Play, FileText, ExternalLink, CreditCard, Bell, LayoutDashboard, Heart, History, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { QRCodeCanvas } from 'qrcode.react';
