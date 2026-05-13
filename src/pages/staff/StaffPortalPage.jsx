@@ -70,7 +70,7 @@ export default function StaffPortalPage() {
 
   // Derived Data
   const myMembers = isTrainer
-    ? (members || []).filter(m => m.trainerId === tenant?.id)
+    ? (members || []).filter(m => String(m.trainerId) === String(tenant?.id))
     : (members || []);
 
   const filteredMembers = myMembers.filter(m => 

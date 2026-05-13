@@ -8,7 +8,8 @@ const router = express.Router();
 // GET all members for the authenticated Tenant
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const tenantId = req.user.tenantId || req.user.id;
+    const tenantId = req.user.tenantId; // Use the gym's ID from the token
+    if (!tenantId) return res.status(400).json({ error: "No Gym ID found in session." });
     
     const members = await prisma.member.findMany({
       where: { tenantId },
