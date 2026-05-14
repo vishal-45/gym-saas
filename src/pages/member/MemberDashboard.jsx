@@ -494,19 +494,15 @@ export default function MemberDashboard() {
                   )) : <p style={{ color: '#64748b' }}>No diet plans assigned.</p>}
                 </div>
               </div>
-            </div>
-          )}
 
-                    {/* Quick Tips */}
-                    <div className="glass-card-premium" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), transparent)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
-                        <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                            <Bell size={18} color="#8b5cf6" /> Coach's Brief
-                        </h4>
-                        <p style={{ fontSize: '0.9rem', color: '#94a3b8', lineHeight: '1.6' }}>
-                            "Focus on explosive tempo today. Keep your rest periods under 60 seconds to maintain metabolic stress. Drink 1L extra water."
-                        </p>
-                    </div>
-                </div>
+              {/* Quick Tips */}
+              <div className="glass-card-premium" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), transparent)', border: '1px solid rgba(139, 92, 246, 0.2)', marginTop: '2rem' }}>
+                  <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                      <Bell size={18} color="#8b5cf6" /> Coach's Brief
+                  </h4>
+                  <p style={{ fontSize: '0.9rem', color: '#94a3b8', lineHeight: '1.6' }}>
+                      "Focus on explosive tempo today. Keep your rest periods under 60 seconds to maintain metabolic stress. Drink 1L extra water."
+                  </p>
               </div>
             </div>
           )}
