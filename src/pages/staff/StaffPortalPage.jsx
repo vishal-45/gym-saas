@@ -714,7 +714,8 @@ export default function StaffPortalPage() {
                         {isManager ? `₹${payments.reduce((acc, curr) => acc + curr.amount, 0).toLocaleString()}` : members.length}
                     </p>
                   </div>
-                              )}
+                </>
+              )}
             </div>
           </div>
         )}
@@ -1111,8 +1112,6 @@ export default function StaffPortalPage() {
                         </div>
                     )}
                 </div>
-                )}
-            </div>
             </div>
          </div>
        )}
