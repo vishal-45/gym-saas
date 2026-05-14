@@ -1112,6 +1112,8 @@ export default function StaffPortalPage() {
                         </div>
                     )}
                 </div>
+                )}
+            </div>
             </div>
          </div>
        )}
