@@ -931,7 +931,9 @@ export default function StaffPortalPage() {
             <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', padding: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
                 {[
                 { id: 'workouts', icon: Dumbbell, label: 'Workouts', color: '#6366f1' },
-                { id: 'diets', icon: Utensils, label: 'Nutrition', color: '#10b981' }
+                { id: 'diets', icon: Utensils, label: 'Nutrition', color: '#10b981' },
+                { id: 'notes', icon: FileText, label: 'Notes', color: '#f59e0b' },
+                { id: 'progress', icon: TrendingUp, label: 'Telemetry', color: '#10b981' }
                 ].map(t => (
                 <button 
                     key={t.id}
@@ -951,7 +953,51 @@ export default function StaffPortalPage() {
                     <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1.5rem', borderRadius: '24px', marginBottom: '2rem' }}>
                         <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: 800 }}>Training Protocol</h4>
                         <form onSubmit={handleCreateWorkout} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                            <input name="title" placeholder="Workout Title (e.g. Push Day)" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white' }} required />
+                            <textarea name="exercises" placeholder="Exercises (one per line)" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', height: '120px' }} required></textarea>
+                            <button type="submit" style={{ padding: '1rem', borderRadius: '12px', border: 'none', background: '#6366f1', color: 'white', fontWeight: 800, cursor: 'pointer' }}>Deploy Protocol</button>
+                        </form>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {wellnessData.workouts.map(w => (
+                            <div key={w.id} style={{ padding: '1.5rem', borderRadius: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <h5 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem' }}>{w.title}</h5>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                    {w.exercises.map((ex, i) => (
+                                        <span key={i} style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1', padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600 }}>{ex.name}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
                 )}
+                
+                {activeTab === 'diets' && (
+                <div className="fade-in">
+                    <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '1.5rem', borderRadius: '24px', marginBottom: '2rem' }}>
+                        <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: 800 }}>Nutrition Fuel</h4>
+                        <form onSubmit={handleCreateDiet} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                            <input name="title" placeholder="Diet Plan Title" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white' }} required />
+                            <textarea name="meals" placeholder="Meal structure (one per line)" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', height: '120px' }} required></textarea>
+                            <button type="submit" style={{ padding: '1rem', borderRadius: '12px', border: 'none', background: '#10b981', color: 'white', fontWeight: 800, cursor: 'pointer' }}>Assign Diet</button>
+                        </form>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {wellnessData.diets.map(d => (
+                            <div key={d.id} style={{ padding: '1.5rem', borderRadius: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <h5 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem' }}>{d.title}</h5>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    {d.meals.map((m, i) => (
+                                        <p key={i} style={{ margin: 0, fontSize: '0.9rem', color: '#94a3b8' }}>• {m.content}</p>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                )}
+
                 {activeTab === 'notes' && (
                 <div className="fade-in">
                     <h4 style={{ fontWeight: 800, marginBottom: '0.5rem' }}>Confidential Observations</h4>
