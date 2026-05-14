@@ -15,7 +15,7 @@ import {
   CreditCard, ShieldCheck, AlertCircle, CheckCircle2,
   CalendarPlus, UserMinus, Camera, XCircle, History,
   Mail, Phone, MapPin, UserPlus, Trash2, FileText,
-  UserCog, Lock, Unlock, RefreshCw
+  UserCog, Lock, Unlock, RefreshCw, Menu
 } from 'lucide-react';
 
 const API_URL = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
