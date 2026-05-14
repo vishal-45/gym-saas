@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Dumbbell, CreditCard, Settings, LogOut, Camera, BookOpen, Contact, Award, TrendingUp, Heart, Zap, Megaphone } from 'lucide-react';
+import { LayoutDashboard, Users, Dumbbell, CreditCard, Settings, LogOut, Camera, BookOpen, Contact, Award, TrendingUp, Heart, Zap, Megaphone, X } from 'lucide-react';
 import { useGymContext } from '../context/GymContext';
 
 export default function Sidebar({ isOpen, closeSidebar }) {
@@ -24,8 +24,13 @@ export default function Sidebar({ isOpen, closeSidebar }) {
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
-        <Dumbbell className="logo-icon" color="var(--brand-primary)" size={28} />
-        <span className="logo-text">CoreFitness</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Dumbbell className="logo-icon" color="var(--brand-primary)" size={28} />
+          <span className="logo-text">CoreFitness</span>
+        </div>
+        <button className="mobile-close-btn" onClick={closeSidebar} style={{ display: 'none', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+          <X size={24} color="var(--text-secondary)" />
+        </button>
       </div>
       
       <nav className="nav-menu">

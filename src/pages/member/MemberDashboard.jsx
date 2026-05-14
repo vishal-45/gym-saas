@@ -198,6 +198,7 @@ export default function MemberDashboard() {
           margin-left: 260px;
           min-height: 100vh;
           padding: 2rem 3rem;
+          transition: all 0.3s ease;
         }
         .member-sidebar {
           width: 260px;
@@ -220,10 +221,17 @@ export default function MemberDashboard() {
           }
           .member-main {
             margin-left: 0 !important;
-            padding: 1.5rem !important;
+            padding: 1rem !important;
           }
-          .dashboard-grid {
+          .dashboard-grid, .wellness-grid {
             grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+          }
+          .mobile-header {
+            display: flex !important;
+          }
+          .header-title {
+            font-size: 2.2rem !important;
           }
         }
         .nav-button {
@@ -302,8 +310,8 @@ export default function MemberDashboard() {
 
         <main className="member-main">
           {/* Mobile Header */}
-          <div className="mobile-only" style={{ display: 'none', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+          <div className="mobile-header" style={{ display: 'none', alignItems: 'center', gap: '1rem', marginBottom: '2rem', padding: '1rem', background: 'rgba(15, 17, 21, 0.5)', backdropFilter: 'blur(10px)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>
               <Menu size={24} />
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -316,19 +324,19 @@ export default function MemberDashboard() {
             <div className="fade-in">
               {/* Personal Reminders */}
               {notifications.filter(n => n.status === 'Unread' && n.type === 'EXPIRY').map(n => (
-                <div key={n.id} className="glass-card fade-in" style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '1.5rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                        <div style={{ background: 'rgba(245, 158, 11, 0.2)', width: '45px', height: '45px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Bell size={20} color="#f59e0b" />
+                <div key={n.id} className="glass-card fade-in" style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '1.25rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ background: 'rgba(245, 158, 11, 0.2)', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Bell size={18} color="#f59e0b" />
                         </div>
                         <div>
-                            <h4 style={{ margin: 0, fontWeight: 800, color: '#f59e0b' }}>{n.title}</h4>
-                            <p style={{ margin: '0.25rem 0 0 0', color: '#94a3b8', fontSize: '0.9rem' }}>{n.message}</p>
+                            <h4 style={{ margin: 0, fontWeight: 800, color: '#f59e0b', fontSize: '0.95rem' }}>{n.title}</h4>
+                            <p style={{ margin: '0.2rem 0 0 0', color: '#94a3b8', fontSize: '0.85rem' }}>{n.message}</p>
                         </div>
                     </div>
                     <button 
                         onClick={() => markNotificationRead(n.id)}
-                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '0.6rem 1.25rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer' }}
+                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', width: '100%', maxWidth: '120px' }}
                     >
                         Got it
                     </button>
@@ -336,24 +344,24 @@ export default function MemberDashboard() {
               ))}
 
               <div style={{ marginBottom: '3rem', marginTop: '1rem' }}>
-                <h1 style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-1px' }}>
+                <h1 className="header-title" style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-1px' }}>
                   Welcome back, <span className="animate-gradient-text">{tenant?.name?.split(' ')[0]}!</span>
                 </h1>
-                <p style={{ color: '#94a3b8', fontSize: '1.1rem', fontWeight: 400 }}>Your personal fitness dashboard and upcoming schedule.</p>
+                <p style={{ color: '#94a3b8', fontSize: '1.1rem', fontWeight: 400 }}>Your personal fitness dashboard.</p>
               </div>
 
-              <div className="dashboard-grid fade-in" style={{ gridTemplateColumns: '1fr 1.8fr', gap: '2.5rem' }}>
+              <div className="dashboard-grid fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1.8fr', gap: '2.5rem' }}>
                 {/* Plan Info Card */}
-                <div className="glass-card-premium membership-card-glow">
-                  <div className="stat-icon-wrapper floating-icon" style={{ background: 'linear-gradient(135deg, #8b5cf6, #6366f1)', boxShadow: '0 10px 20px rgba(139, 92, 246, 0.3)', width: '60px', height: '60px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-                    <Award size={32} color="#fff" />
+                <div className="glass-card-premium membership-card-glow" style={{ padding: '2rem' }}>
+                  <div className="stat-icon-wrapper floating-icon" style={{ background: 'linear-gradient(135deg, #8b5cf6, #6366f1)', boxShadow: '0 10px 20px rgba(139, 92, 246, 0.3)', width: '50px', height: '50px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    <Award size={28} color="#fff" />
                   </div>
-                  <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '2px', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 700 }}>Current Membership</h3>
-                  <div style={{ fontSize: '3rem', fontWeight: 900, color: '#fff', marginBottom: '1.5rem', letterSpacing: '-1px', textTransform: 'capitalize' }}>
+                  <h3 style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 700 }}>Membership</h3>
+                  <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff', marginBottom: '1.25rem', letterSpacing: '-1px', textTransform: 'capitalize' }}>
                     {tenant?.plan || 'Active Pass'}
                   </div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.6rem 1.25rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '20px', color: '#10b981', fontWeight: 700, fontSize: '0.85rem', marginBottom: '2.5rem' }}>
-                    <div className="pulse-dot" style={{ background: '#10b981' }}></div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.5rem 1rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '20px', color: '#10b981', fontWeight: 700, fontSize: '0.75rem', marginBottom: '2rem' }}>
+                    <div className="pulse-dot" style={{ background: '#10b981', width: '6px', height: '6px' }}></div>
                     ACCOUNT STATUS: ACTIVE
                   </div>
                   
@@ -361,53 +369,53 @@ export default function MemberDashboard() {
                     onClick={handlePayment} 
                     disabled={isPaying}
                     className="btn-primary" 
-                    style={{ width: '100%', background: 'linear-gradient(135deg, #8b5cf6, #4f46e5)', padding: '1rem', borderRadius: '14px', justifyContent: 'center', fontSize: '1rem', boxShadow: '0 10px 25px rgba(99, 102, 241, 0.4)' }}
+                    style={{ width: '100%', background: 'linear-gradient(135deg, #8b5cf6, #4f46e5)', padding: '0.9rem', borderRadius: '12px', justifyContent: 'center', fontSize: '0.95rem', boxShadow: '0 10px 20px rgba(99, 102, 241, 0.3)' }}
                   >
-                    <CreditCard size={20} /> {isPaying ? 'Processing...' : 'Pay Subscription (Online)'}
+                    <CreditCard size={18} /> {isPaying ? 'Processing...' : 'Pay Subscription'}
                   </button>
                 </div>
 
                 {/* Upcoming Classes Card */}
-                <div className="glass-card-premium">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <div style={{ background: 'rgba(59, 130, 246, 0.15)', padding: '10px', borderRadius: '12px' }}>
-                        <Calendar size={24} color="#3b82f6" /> 
+                <div className="glass-card-premium" style={{ padding: '2rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{ background: 'rgba(59, 130, 246, 0.15)', padding: '8px', borderRadius: '10px' }}>
+                        <Calendar size={20} color="#3b82f6" /> 
                       </div>
-                      <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>Upcoming Sessions</h3>
+                      <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Schedule</h3>
                     </div>
                     {myBookings.length > 0 && (
-                      <span style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '0.5rem 1rem', borderRadius: '20px', fontWeight: 700, fontSize: '0.85rem', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                      <span style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '0.4rem 0.8rem', borderRadius: '15px', fontWeight: 700, fontSize: '0.75rem', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
                         {myBookings.length} BOOKED
                       </span>
                     )}
                   </div>
                   
                   {myBookings.length > 0 ? (
-                    <div style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '10px' }}>
+                    <div style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '5px' }}>
                       {myBookings.map(booking => (
-                        <div key={booking.id} className="activity-item-premium">
-                           <div style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', width: '50px', height: '50px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 8px 16px rgba(59, 130, 246, 0.3)' }}>
-                             <CheckCircle size={24} />
+                        <div key={booking.id} className="activity-item-premium" style={{ padding: '1rem' }}>
+                           <div style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>
+                             <CheckCircle size={20} />
                            </div>
                            <div style={{ flex: 1 }}>
-                              <p style={{ fontWeight: 700, margin: 0, fontSize: '1.1rem' }}>{booking.class.title}</p>
-                              <span style={{ fontSize: '0.9rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem' }}>
-                                <Users size={14} /> {booking.class.trainer} • <Calendar size={14}/> {booking.class.time}
+                              <p style={{ fontWeight: 700, margin: 0, fontSize: '1rem' }}>{booking.class.title}</p>
+                              <span style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.2rem' }}>
+                                {booking.class.time}
                               </span>
                            </div>
                         </div>
                       ))}
-                      <button onClick={() => setShowExplore(true)} className="btn-secondary" style={{ width: '100%', marginTop: '1.5rem', justifyContent: 'center', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)', color: '#fff', fontSize: '1rem', fontWeight: 600, transition: 'all 0.3s ease' }}>
-                         <Calendar size={18} style={{ marginRight: '8px' }} /> Book Another Session
+                      <button onClick={() => setShowExplore(true)} className="btn-secondary" style={{ width: '100%', marginTop: '1rem', justifyContent: 'center', background: 'rgba(255,255,255,0.03)', padding: '0.8rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>
+                         Book Session
                       </button>
                     </div>
                   ) : (
-                    <div style={{ padding: '4rem 2rem', textAlign: 'center', background: 'rgba(255,255,255,0.01)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-                      <Calendar size={56} style={{ color: 'rgba(255,255,255,0.05)', marginBottom: '1.5rem' }} />
-                      <p style={{ color: '#94a3b8', marginBottom: '2rem', fontSize: '1.2rem', fontWeight: 500 }}>No active bookings found in your schedule.</p>
-                      <button onClick={() => setShowExplore(true)} className="btn-primary" style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', margin: '0 auto', padding: '1rem 2.5rem', borderRadius: '14px', fontSize: '1rem', boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4)' }}>
-                        <Plus size={20} style={{ marginRight: '8px' }} /> Explore Classes
+                    <div style={{ padding: '3rem 1rem', textAlign: 'center', background: 'rgba(255,255,255,0.01)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                      <Calendar size={40} style={{ color: 'rgba(255,255,255,0.05)', marginBottom: '1rem' }} />
+                      <p style={{ color: '#94a3b8', marginBottom: '1.5rem', fontSize: '1rem' }}>No active bookings.</p>
+                      <button onClick={() => setShowExplore(true)} className="btn-primary" style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', margin: '0 auto', padding: '0.8rem 1.5rem', borderRadius: '12px', fontSize: '0.9rem' }}>
+                        Explore Classes
                       </button>
                     </div>
                   )}
@@ -436,99 +444,58 @@ export default function MemberDashboard() {
 
           {activeTab === 'wellness' && (
             <div className="fade-in">
-              <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                <div>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Wellness Protocol</h1>
-                    <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Personalized training and nutrition plans from your coaches.</p>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 700, letterSpacing: '1px' }}>TODAY'S ADHERENCE</div>
-                    <div style={{ fontSize: '2rem', fontWeight: 900, color: '#8b5cf6' }}>85%</div>
-                </div>
+              <div style={{ marginBottom: '3rem' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Wellness</h1>
+                <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>Your personalized plans.</p>
               </div>
 
-              <div className="dashboard-grid" style={{ gridTemplateColumns: '1.2fr 0.8fr', gap: '2.5rem' }}>
+              <div className="wellness-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2rem' }}>
                 {/* Workouts */}
-                <div className="glass-card-premium">
-                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem', fontSize: '1.5rem', fontWeight: 800 }}>
-                    <Dumbbell color="#8b5cf6" size={28} /> Training Program
+                <div className="glass-card-premium" style={{ padding: '2rem' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', fontSize: '1.25rem', fontWeight: 800 }}>
+                    <Dumbbell color="#8b5cf6" size={24} /> Training
                   </h3>
                   {wellnessData.workouts.length > 0 ? wellnessData.workouts.map(plan => (
-                    <div key={plan.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1.5rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <div>
-                                <h4 style={{ margin: 0, fontSize: '1.25rem' }}>{plan.title}</h4>
-                                <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '0.25rem 0 0 0' }}>Assigned by {plan.trainerName}</p>
-                            </div>
-                            <span style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', padding: '0.5rem 1rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
-                                {Array.isArray(plan.exercises) ? plan.exercises.length : 0} EXERCISES
-                            </span>
-                        </div>
+                    <div key={plan.id} style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1rem' }}>
+                        <h4 style={{ margin: 0, fontSize: '1.1rem' }}>{plan.title}</h4>
+                        <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: '0.2rem 0 1rem 0' }}>By {plan.trainerName}</p>
                         
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             {Array.isArray(plan.exercises) ? plan.exercises.map((ex, i) => (
-                                <div key={i} className="activity-item-premium" style={{ margin: 0, padding: '1rem 1.5rem', cursor: 'pointer' }}>
-                                    <div style={{ width: '24px', height: '24px', borderRadius: '6px', border: '2px solid #8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        {/* Mock check logic */}
-                                        <div style={{ width: '12px', height: '12px', background: i % 3 === 0 ? '#8b5cf6' : 'transparent', borderRadius: '2px' }}></div>
-                                    </div>
+                                <div key={i} className="activity-item-premium" style={{ margin: 0, padding: '0.75rem 1rem' }}>
                                     <div style={{ flex: 1 }}>
-                                        <span style={{ fontWeight: 600, fontSize: '1rem' }}>{ex.name}</span>
-                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{ex.sets} Sets • {ex.reps} Reps • 60s Rest</div>
+                                        <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{ex.name}</span>
+                                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{ex.sets}x{ex.reps}</div>
                                     </div>
-                                    <Play size={16} color="#8b5cf6" style={{ opacity: 0.5 }} />
                                 </div>
-                            )) : <p>Custom protocol instructions provided.</p>}
+                            )) : <p style={{ fontSize: '0.9rem', color: '#94a3b8' }}>{plan.exercises}</p>}
                         </div>
                     </div>
-                  )) : <p style={{ color: '#64748b' }}>No workouts assigned yet.</p>}
+                  )) : <p style={{ color: '#64748b' }}>No workouts assigned.</p>}
                 </div>
 
                 {/* Diets */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-                    <div className="glass-card-premium">
-                      <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem', fontSize: '1.5rem', fontWeight: 800 }}>
-                        <Heart color="#ec4899" size={28} /> Fuel & Nutrition
-                      </h3>
-                      {wellnessData.diets.length > 0 ? wellnessData.diets.map(plan => (
-                        <div key={plan.id}>
-                            <h4 style={{ margin: 0, fontSize: '1.1rem', marginBottom: '1.5rem' }}>{plan.title}</h4>
-                            
-                            {/* Macro Visualization */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2.5rem' }}>
-                                {plan.macros && Object.entries(plan.macros).map(([k, v]) => {
-                                    const colors = { protein: '#8b5cf6', carbs: '#3b82f6', fats: '#f59e0b' };
-                                    const percentage = k === 'protein' ? 40 : (k === 'carbs' ? 40 : 20);
-                                    return (
-                                        <div key={k}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-                                                <span style={{ textTransform: 'uppercase', color: '#94a3b8' }}>{k}</span>
-                                                <span>{v}g</span>
-                                            </div>
-                                            <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                                                <div style={{ height: '100%', width: `${percentage}%`, background: colors[k] || '#8b5cf6', boxShadow: `0 0 10px ${colors[k]}44` }}></div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                {Array.isArray(plan.meals) ? plan.meals.map((m, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <div style={{ background: 'rgba(236, 72, 153, 0.1)', color: '#ec4899', padding: '0.4rem 0.8rem', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>
-                                            MEAL {i+1}
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{m.name}</div>
-                                            <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.2rem' }}>{m.content}</div>
-                                        </div>
-                                    </div>
-                                )) : <p>{plan.meals}</p>}
-                            </div>
+                <div className="glass-card-premium" style={{ padding: '2rem' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', fontSize: '1.25rem', fontWeight: 800 }}>
+                    <Heart color="#ec4899" size={24} /> Nutrition
+                  </h3>
+                  {wellnessData.diets.length > 0 ? wellnessData.diets.map(plan => (
+                    <div key={plan.id}>
+                        <h4 style={{ margin: 0, fontSize: '1.1rem', marginBottom: '1rem' }}>{plan.title}</h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            {Array.isArray(plan.meals) ? plan.meals.map((m, i) => (
+                                <div key={i} style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#ec4899', marginBottom: '0.2rem' }}>MEAL {i+1}</div>
+                                    <div style={{ fontSize: '0.85rem', color: '#fff' }}>{m.content}</div>
+                                </div>
+                            )) : <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{plan.meals}</p>}
                         </div>
-                      )) : <p style={{ color: '#64748b' }}>No diet plans assigned yet.</p>}
                     </div>
+                  )) : <p style={{ color: '#64748b' }}>No diet plans assigned.</p>}
+                </div>
+              </div>
+            </div>
+          )}
 
                     {/* Quick Tips */}
                     <div className="glass-card-premium" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), transparent)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>

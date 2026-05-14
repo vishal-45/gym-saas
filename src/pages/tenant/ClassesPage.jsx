@@ -46,8 +46,8 @@ export default function ClassesPage() {
 
       <div className="dashboard-grid">
         {/* Classes List */}
-        <div className="glass-card" style={{ gridColumn: 'span 2' }}>
-          <h3 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700 }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1' }}>
+          <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700 }}>
             <Clock size={22} color="var(--brand-primary)" /> Deployment Agenda
           </h3>
           
@@ -62,29 +62,29 @@ export default function ClassesPage() {
               const isFull = confirmed >= session.capacity;
 
               return (
-                <div key={session.id} className="activity-item" style={{ padding: '1.5rem', borderLeft: isFull ? '4px solid #fbbf24' : '4px solid var(--brand-primary)' }}>
-                  <div className="activity-user" style={{ flex: 1, gap: '1.5rem' }}>
-                    <div className="activity-avatar" style={{ background: isFull ? '#fbbf24' : 'var(--brand-primary)', color: isFull ? '#000' : 'white', width: '50px', height: '50px' }}>
+                <div key={session.id} className="activity-item" style={{ padding: 'clamp(1rem, 3vw, 1.5rem)', borderLeft: isFull ? '4px solid #fbbf24' : '4px solid var(--brand-primary)', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div className="activity-user" style={{ flex: '1 1 250px', gap: 'clamp(0.75rem, 3vw, 1.5rem)' }}>
+                    <div className="activity-avatar" style={{ background: isFull ? '#fbbf24' : 'var(--brand-primary)', color: isFull ? '#000' : 'white', width: 'clamp(40px, 10vw, 50px)', height: 'clamp(40px, 10vw, 50px)', flexShrink: 0, fontSize: '0.9rem' }}>
                       {session.time.split(':')[0]}
                     </div>
                     <div className="activity-details">
-                      <p style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.25rem' }}>{session.title}</p>
-                      <div style={{ display: 'flex', gap: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                      <p style={{ fontSize: 'clamp(1rem, 4vw, 1.25rem)', fontWeight: 700, marginBottom: '0.25rem' }}>{session.title}</p>
+                      <div style={{ display: 'flex', gap: 'clamp(0.75rem, 3vw, 1.5rem)', color: 'var(--text-secondary)', fontSize: '0.8rem', flexWrap: 'wrap' }}>
                           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><User size={14}/> {session.trainer}</span>
                           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14}/> {session.time}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(1rem, 4vw, 2rem)', marginLeft: 'auto' }}>
                     <div style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: isFull ? '#fbbf24' : 'var(--text-primary)' }}>
-                            <Users size={18} /> 
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: isFull ? '#fbbf24' : 'var(--text-primary)', fontSize: '0.9rem' }}>
+                            <Users size={16} /> 
                             {confirmed} <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>/ {session.capacity}</span>
                         </div>
                         {waitlist > 0 && (
-                            <div style={{ fontSize: '0.75rem', color: '#fbbf24', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
-                                <Timer size={12} /> {waitlist} On Waitlist
+                            <div style={{ fontSize: '0.7rem', color: '#fbbf24', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
+                                <Timer size={10} /> {waitlist} Waitlist
                             </div>
                         )}
                     </div>
@@ -92,9 +92,9 @@ export default function ClassesPage() {
                     <button 
                       className="btn-icon-round" 
                       onClick={() => { if(window.confirm("Terminate this session?")) deleteClass(session.id) }}
-                      style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none' }}
+                      style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', width: '32px', height: '32px' }}
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>

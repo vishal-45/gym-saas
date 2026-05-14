@@ -134,11 +134,11 @@ export default function MembersPage() {
       <div className={`members-page fade-in ${isModalOpen ? 'blur-background' : ''}`}>
       <div className="page-actions-bar">
         <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 700 }}>Personnel Database</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Manage active member connections and access protocols.</p>
+          <h2 className="header-title" style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0 }}>Personnel Database</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Manage active member connections and access protocols.</p>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <div className="search-box">
+        <div className="page-actions-group" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="search-box" style={{ flex: '1 1 200px' }}>
               <Search size={18} className="search-icon" />
               <input 
                 type="text" 
@@ -147,12 +147,15 @@ export default function MembersPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="btn-secondary" onClick={() => setIsBroadcastOpen(true)} style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', borderColor: 'rgba(139, 92, 246, 0.2)' }}>
-              <Radio size={18} /> Broadcast
-            </button>
-            <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-              <Plus size={18} /> Enroll New
-            </button>
+            <div style={{ display: 'flex', gap: '0.75rem', width: 'auto' }}>
+              <button className="btn-secondary" onClick={() => setIsBroadcastOpen(true)} style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', borderColor: 'rgba(139, 92, 246, 0.2)', padding: '0.6rem 1rem' }}>
+                <Radio size={18} /> <span className="hide-mobile">Broadcast</span>
+              </button>
+              <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ padding: '0.6rem 1.25rem' }}>
+                <Plus size={18} /> <span className="hide-mobile">Enroll New</span>
+                <span className="show-mobile" style={{ display: 'none' }}>Enroll</span>
+              </button>
+            </div>
         </div>
       </div>
 

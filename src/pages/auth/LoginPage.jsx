@@ -33,8 +33,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', backgroundColor: '#09090b', color: '#fff' }}>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '4rem', background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(0, 0, 0, 0))', borderRight: '1px solid var(--border-color)' }}>
+    <div className="auth-page-container" style={{ minHeight: '100vh', display: 'flex', backgroundColor: '#09090b', color: '#fff' }}>
+      <div className="auth-info-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '4rem', background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(0, 0, 0, 0))', borderRight: '1px solid var(--border-color)' }}>
         <ShieldCheck size={48} color="var(--brand-primary)" style={{ marginBottom: 'auto' }} />
         <h2 style={{ fontSize: '2.5rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '1rem' }}>
           Secure Authentication<br />
@@ -43,8 +43,8 @@ export default function LoginPage() {
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Access your multi-tenant data with enterprise-grade JWT security and SQLite persistence.</p>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '4rem' }}>
-        <form onSubmit={handleSubmit} className="glass-card" style={{ padding: '3rem', width: '100%', maxWidth: '450px' }}>
+      <div className="auth-form-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
+        <form onSubmit={handleSubmit} className="glass-card auth-card" style={{ padding: 'clamp(1.5rem, 5vw, 3rem)', width: '100%', maxWidth: '450px' }}>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem', textAlign: 'center' }}>Welcome Back</h1>
           <p style={{ color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '2.5rem' }}>Log into your Gym Tenant Dashboard.</p>
 

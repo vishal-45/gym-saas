@@ -1,0 +1,254 @@
+/* Responsiveness Overrides & Utilities */
+
+/* Base responsiveness for landing page */
+.landing-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+}
+
+.landing-hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.landing-title {
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -3px;
+    margin-bottom: 2rem;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+
+/* Staff Portal Layout */
+.staff-portal-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.staff-sidebar {
+    width: 280px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    transition: transform 0.3s ease;
+}
+
+.staff-main {
+    flex: 1;
+    padding: 2rem 3rem;
+}
+
+.staff-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.staff-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* --- Media Queries --- */
+
+/* Laptops & Tablets (Large) */
+@media (max-width: 1024px) {
+    .landing-hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 3rem;
+    }
+
+    .landing-title {
+        font-size: 4rem;
+    }
+
+    .landing-hero-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .landing-hero-content p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .landing-hero-actions {
+        justify-content: center;
+    }
+
+    .staff-sidebar {
+        position: fixed;
+        left: 0;
+        z-index: 1000;
+        transform: translateX(-100%);
+    }
+
+    .staff-sidebar.open {
+        transform: translateX(0);
+    }
+
+    .mobile-close-btn {
+        display: block !important;
+    }
+
+    .staff-main {
+        padding: 2rem;
+    }
+}
+
+/* Tablets (Portrait) */
+@media (max-width: 768px) {
+    .landing-navbar-links {
+        display: none !important; /* Hide desktop links */
+    }
+
+    .landing-title {
+        font-size: 3rem;
+        letter-spacing: -1px;
+    }
+
+    .pricing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .staff-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .staff-header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .staff-header-search {
+        width: 100% !important;
+    }
+
+    .staff-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wellness-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .scanner-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .modal-pane {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .mobile-menu-btn {
+        display: block !important;
+    }
+
+    .topbar-search-container {
+        display: none !important;
+    }
+
+    .user-info {
+        display: none !important;
+    }
+
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .show-mobile {
+        display: block !important;
+    }
+}
+
+/* Mobile Devices */
+@media (max-width: 480px) {
+    .landing-title {
+        font-size: 2.5rem;
+    }
+
+    .landing-hero-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .landing-hero-actions a {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .staff-main {
+        padding: 1rem;
+    }
+
+    .header-title {
+        font-size: 1.8rem !important;
+    }
+
+    .auth-info-panel {
+        display: none !important;
+    }
+    
+    .auth-form-panel {
+        width: 100% !important;
+        padding: 1.5rem !important;
+    }
+}
+
+/* Super Admin & Global Admin Styles */
+@media (max-width: 1024px) {
+    .admin-main {
+        padding: 1.5rem !important;
+    }
+    
+    .page-actions-bar {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 1rem !important;
+    }
+    
+    .page-actions-bar > div {
+        width: 100% !important;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        margin: 0 -1rem;
+        border-radius: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .data-table {
+        min-width: 700px;
+    }
+    
+    .slide-pane {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}

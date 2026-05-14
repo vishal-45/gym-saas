@@ -95,15 +95,15 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="dashboard-charts-grid" style={{ display: 'grid', gap: '2rem', marginTop: '2rem' }}>
+      <div className="dashboard-charts-grid" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr', gap: '2rem', marginTop: '2rem' }}>
         
         {/* Main Analytics Block */}
-        <div className="glass-card" style={{ minHeight: '400px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <h3 style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <BarChart3 size={20} color="var(--brand-primary)" /> Weekly Growth Matrix
+        <div className="glass-card" style={{ minHeight: '400px', padding: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <h3 style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <BarChart3 size={20} color="var(--brand-primary)" /> Weekly Growth
             </h3>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.05)', padding: '0.25rem 0.75rem', borderRadius: '1rem' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.05)', padding: '0.25rem 0.75rem', borderRadius: '1rem' }}>
                 Last 7 Days
             </div>
           </div>
@@ -118,51 +118,51 @@ export default function DashboardPage() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis hide />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: 'var(--shadow-md)' }}
+                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', boxShadow: 'var(--shadow-sm)' }}
                   itemStyle={{ color: 'var(--brand-primary)' }}
                 />
-                <Area type="monotone" dataKey="revenue" stroke="var(--brand-primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+                <Area type="monotone" dataKey="revenue" stroke="var(--brand-primary)" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRev)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Action Panel: Expiring Soon List */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem' }}>
             <h3 style={{ marginBottom: '1.5rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Calendar size={20} color="#fbbf24" /> Renewal Queue
             </h3>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1, maxHeight: '350px', overflowY: 'auto' }}>
                 {expiringSoon.length > 0 ? expiringSoon.map(member => (
-                    <div key={member.id} className="activity-item" style={{ background: 'rgba(251, 191, 36, 0.05)', borderLeft: '3px solid #fbbf24' }}>
+                    <div key={member.id} className="activity-item" style={{ background: 'rgba(251, 191, 36, 0.05)', borderLeft: '3px solid #fbbf24', padding: '0.75rem' }}>
                         <div className="activity-user" style={{ gap: '0.75rem' }}>
-                            <div className="avatar micro" style={{ background: '#fbbf24', color: '#000' }}>{member.initial}</div>
+                            <div className="avatar micro" style={{ background: '#fbbf24', color: '#000', width: '30px', height: '30px', fontSize: '0.75rem' }}>{member.initial}</div>
                             <div className="activity-details">
-                                <p style={{ fontSize: '0.9rem' }}>{member.name}</p>
-                                <span style={{ color: '#fbbf24', fontSize: '0.75rem' }}>Expires: {new Date(member.subscriptionEnd).toLocaleDateString()}</span>
+                                <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>{member.name}</p>
+                                <span style={{ color: '#fbbf24', fontSize: '0.7rem' }}>Exp: {new Date(member.subscriptionEnd).toLocaleDateString()}</span>
                             </div>
                         </div>
                         <button 
                             className="btn-icon-round" 
-                            style={{ background: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24' }}
+                            style={{ background: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', width: '30px', height: '30px' }}
                             onClick={() => navigate('/dashboard/members')}
                         >
-                            <ArrowUpRight size={14} />
+                            <ArrowUpRight size={12} />
                         </button>
                     </div>
                 )) : (
-                    <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-secondary)' }}>
-                        <Clock size={40} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
-                        <p>No memberships are expiring in the next 15 days.</p>
+                    <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-secondary)' }}>
+                        <Clock size={32} style={{ opacity: 0.2, margin: '0 auto 0.75rem' }} />
+                        <p style={{ fontSize: '0.85rem' }}>No expiring memberships.</p>
                     </div>
                 )}
             </div>
 
-            <button className="btn-secondary" style={{ width: '100%', marginTop: '1.5rem', justifyContent: 'center' }} onClick={() => navigate('/dashboard/members')}>
+            <button className="btn-secondary" style={{ width: '100%', marginTop: '1.5rem', justifyContent: 'center', fontSize: '0.85rem' }} onClick={() => navigate('/dashboard/members')}>
                 View All Members
             </button>
         </div>

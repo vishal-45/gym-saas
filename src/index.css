@@ -1,3 +1,5 @@
+@import './responsive.css';
+
 :root {
   /* Premium Light Palette - Professional Blue */
   --bg-primary: #f8fafc;

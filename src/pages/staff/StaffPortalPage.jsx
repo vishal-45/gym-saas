@@ -383,13 +383,21 @@ export default function StaffPortalPage() {
   };
 
   const totalSessionsConducted = classes.reduce((acc, c) => acc + (c.bookings?.length || 0), 0);
+  const [isSidebarMobileOpen, setIsSidebarMobileOpen] = useState(false);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#09090b', color: '#fff', fontFamily: "'Outfit', sans-serif" }}>
+    <div className="staff-portal-container" style={{ background: '#09090b', color: '#fff', fontFamily: "'Outfit', sans-serif" }}>
       
+      {/* Mobile Menu Overlay */}
+      {isSidebarMobileOpen && (
+        <div 
+          onClick={() => setIsSidebarMobileOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 95, backdropFilter: 'blur(4px)' }}
+        />
+      )}
 
       {/* Premium Sidebar */}
-      <aside style={{ width: '280px', background: '#0c0c0e', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh' }}>
+      <aside className={`staff-sidebar ${isSidebarMobileOpen ? 'open' : ''}`} style={{ background: '#0c0c0e', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '3rem', padding: '0 0.5rem' }}>
           <div style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 15px rgba(99, 102, 241, 0.3)' }}>
             <Dumbbell size={22} color="white" />
@@ -399,13 +407,13 @@ export default function StaffPortalPage() {
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
           <button 
-            onClick={() => setActiveView('dashboard')}
+            onClick={() => { setActiveView('dashboard'); setIsSidebarMobileOpen(false); }}
             style={{ 
               display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
               background: activeView === 'dashboard' ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
               color: activeView === 'dashboard' ? '#6366f1' : '#94a3b8',
               fontWeight: activeView === 'dashboard' ? 700 : 500,
-              transition: 'all 0.2s'
+              transition: 'all 0.2s', width: '100%', textAlign: 'left'
             }}
           >
             <LayoutDashboard size={20} /> Dashboard
@@ -413,13 +421,13 @@ export default function StaffPortalPage() {
           
           {hasPermission('members') && (
             <button 
-              onClick={() => setActiveView('clients')}
+              onClick={() => { setActiveView('clients'); setIsSidebarMobileOpen(false); }}
               style={{ 
                 display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
                 background: activeView === 'clients' ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
                 color: activeView === 'clients' ? '#6366f1' : '#94a3b8',
                 fontWeight: activeView === 'clients' ? 700 : 500,
-                transition: 'all 0.2s'
+                transition: 'all 0.2s', width: '100%', textAlign: 'left'
               }}
             >
               <Users size={20} /> {isTrainer ? 'My Clients' : 'Members'}
@@ -430,13 +438,13 @@ export default function StaffPortalPage() {
             <>
                 {hasPermission('scanner') && (
                   <button 
-                      onClick={() => setActiveView('scanner')}
+                      onClick={() => { setActiveView('scanner'); setIsSidebarMobileOpen(false); }}
                       style={{ 
                       display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
                       background: activeView === 'scanner' ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
                       color: activeView === 'scanner' ? '#10b981' : '#94a3b8',
                       fontWeight: activeView === 'scanner' ? 700 : 500,
-                      transition: 'all 0.2s'
+                      transition: 'all 0.2s', width: '100%', textAlign: 'left'
                       }}
                   >
                       <Camera size={20} /> QR Check-in
@@ -444,58 +452,30 @@ export default function StaffPortalPage() {
                 )}
                 {hasPermission('leads') && (
                   <button 
-                      onClick={() => setActiveView('leads')}
+                      onClick={() => { setActiveView('leads'); setIsSidebarMobileOpen(false); }}
                       style={{ 
                       display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
                       background: activeView === 'leads' ? 'rgba(245, 158, 11, 0.1)' : 'transparent',
                       color: activeView === 'leads' ? '#f59e0b' : '#94a3b8',
                       fontWeight: activeView === 'leads' ? 700 : 500,
-                      transition: 'all 0.2s'
+                      transition: 'all 0.2s', width: '100%', textAlign: 'left'
                       }}
                   >
                       <TrendingUp size={20} /> Leads
                   </button>
-                )}
-                {isManager && (
-                  <>
-                    <button 
-                        onClick={() => setActiveView('team')}
-                        style={{ 
-                        display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                        background: activeView === 'team' ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
-                        color: activeView === 'team' ? '#8b5cf6' : '#94a3b8',
-                        fontWeight: activeView === 'team' ? 700 : 500,
-                        transition: 'all 0.2s'
-                        }}
-                    >
-                        <ShieldCheck size={20} /> Team Management
-                    </button>
-                    <button 
-                        onClick={() => setActiveView('plans')}
-                        style={{ 
-                        display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                        background: activeView === 'plans' ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
-                        color: activeView === 'plans' ? '#10b981' : '#94a3b8',
-                        fontWeight: activeView === 'plans' ? 700 : 500,
-                        transition: 'all 0.2s'
-                        }}
-                    >
-                        <Zap size={20} /> Plans & Pricing
-                    </button>
-                  </>
                 )}
             </>
           )}
 
           {hasPermission('schedule') && (
             <button 
-              onClick={() => setActiveView('schedule')}
+              onClick={() => { setActiveView('schedule'); setIsSidebarMobileOpen(false); }}
               style={{ 
                 display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
                 background: activeView === 'schedule' ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
                 color: activeView === 'schedule' ? '#6366f1' : '#94a3b8',
                 fontWeight: activeView === 'schedule' ? 700 : 500,
-                transition: 'all 0.2s'
+                transition: 'all 0.2s', width: '100%', textAlign: 'left'
               }}
             >
               <Calendar size={20} /> Schedule
@@ -504,13 +484,13 @@ export default function StaffPortalPage() {
 
           {isTrainer && (
             <button 
-              onClick={() => setActiveView('analytics')}
+              onClick={() => { setActiveView('analytics'); setIsSidebarMobileOpen(false); }}
               style={{ 
                 display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
                 background: activeView === 'analytics' ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
                 color: activeView === 'analytics' ? '#8b5cf6' : '#94a3b8',
                 fontWeight: activeView === 'analytics' ? 700 : 500,
-                transition: 'all 0.2s'
+                transition: 'all 0.2s', width: '100%', textAlign: 'left'
               }}
             >
               <TrendingUp size={20} /> Performance Logs
@@ -538,31 +518,40 @@ export default function StaffPortalPage() {
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, padding: '2rem 3rem', overflowY: 'auto' }}>
+      <main className="staff-main" style={{ overflowY: 'auto' }}>
         
         {/* Top Header Section */}
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+        <header className="staff-header">
           <div>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-              {activeView === 'analytics' ? 'Performance Insights' : activeView === 'dashboard' ? 'Portal Command' : activeView === 'schedule' ? 'Daily Schedule' : activeView === 'scanner' ? 'QR Front Desk' : 'Member Directory'}
-            </h1>
-            <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <button 
+                    onClick={() => setIsSidebarMobileOpen(true)}
+                    className="mobile-menu-btn"
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem', borderRadius: '8px', cursor: 'pointer' }}
+                >
+                    <Menu size={20} />
+                </button>
+                <h1 className="header-title" style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0 }}>
+                {activeView === 'analytics' ? 'Performance Insights' : activeView === 'dashboard' ? 'Portal Command' : activeView === 'schedule' ? 'Daily Schedule' : activeView === 'scanner' ? 'QR Front Desk' : 'Member Directory'}
+                </h1>
+            </div>
+            <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginTop: '0.5rem' }}>
               {isTrainer 
                 ? `Coaching session active for ${tenant?.name?.split(' ')[0]}. Manage your athletes.`
                 : `Operations active. Welcome, ${tenant?.name?.split(' ')[0]}. Manage gym logistics.`
               }
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div className="staff-header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
              {(activeView === 'clients' || activeView === 'dashboard') && (
-                <div style={{ position: 'relative' }}>
+                <div className="staff-header-search" style={{ position: 'relative' }}>
                     <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                     <input 
                     type="text" 
                     placeholder="Search members..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.8rem 1rem 0.8rem 3rem', borderRadius: '12px', color: 'white', width: '300px' }}
+                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.8rem 1rem 0.8rem 3rem', borderRadius: '12px', color: 'white', width: '100%' }}
                     />
                 </div>
              )}
@@ -585,7 +574,7 @@ export default function StaffPortalPage() {
                 </button>
 
                 {showNotifications && (
-                  <div className="glass-card fade-in" style={{ position: 'absolute', top: '100%', right: 0, width: '350px', marginTop: '1rem', zIndex: 1000, padding: '1.5rem', maxHeight: '500px', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+                  <div className="glass-card fade-in" style={{ position: 'absolute', top: '100%', right: 0, width: '300px', marginTop: '1rem', zIndex: 1000, padding: '1.5rem', maxHeight: '400px', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                       <h4 style={{ margin: 0, fontWeight: 800 }}>Alert Center</h4>
                       <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{notifications.length} Total</span>
@@ -619,7 +608,7 @@ export default function StaffPortalPage() {
 
         {activeView === 'dashboard' && (
           <div className="fade-in">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+            <div className="staff-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
               
               {isTrainer ? (
                 <>
@@ -674,27 +663,6 @@ export default function StaffPortalPage() {
                         {isManager ? `₹${payments.reduce((acc, curr) => acc + curr.amount, 0).toLocaleString()}` : members.length}
                     </p>
                   </div>
-
-                  <div 
-                    onClick={runRetentionScan}
-                    style={{ 
-                        padding: '2rem', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(37, 99, 235, 0.1))', 
-                        border: '1px solid rgba(99, 102, 241, 0.2)', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        display: 'flex', flexDirection: 'column', justifyContent: 'center'
-                    }}
-                    className="hover-lift"
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                        <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: 'rgba(99, 102, 241, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {isScanningRetention ? <RefreshCw size={24} color="#6366f1" className="spin" /> : <Zap size={24} color="#6366f1" />}
-                        </div>
-                        <div style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366f1', padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 800 }}>
-                            RETENTION
-                        </div>
-                    </div>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>{isScanningRetention ? 'Scanning...' : 'Run Expiry Check'}</h3>
-                    <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>Detect memberships expiring in the next 7 days.</p>
-                  </div>
                 </>
               )}
             </div>
@@ -704,7 +672,7 @@ export default function StaffPortalPage() {
 
         {activeView === 'clients' && (
           <div className="fade-in">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.75rem', margin: 0 }}>
                     {isTrainer ? 'Client Directory' : 'Member Roster'} 
                     <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#94a3b8', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>{filteredMembers.length}</span>
@@ -730,7 +698,7 @@ export default function StaffPortalPage() {
                 <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>No members found.</p>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                 {filteredMembers.map(m => {
                   const isExpired = m.subscriptionEnd && new Date(m.subscriptionEnd) < new Date();
                   return (
@@ -745,13 +713,6 @@ export default function StaffPortalPage() {
                               <p style={{ fontSize: '0.85rem', color: isExpired ? '#ef4444' : '#94a3b8', margin: 0, fontWeight: isExpired ? 700 : 400 }}>{isExpired ? 'EXPIRED PLAN' : m.plan}</p>
                            </div>
                         </div>
-                        <button 
-                          onClick={() => { setSelectedMember(m); setIsEditMemberModalOpen(true); }}
-                          className="btn-icon-round" 
-                          style={{ background: 'transparent', cursor: 'pointer' }}
-                        >
-                          <MoreVertical size={18} color="#94a3b8" />
-                        </button>
                       </div>
 
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -776,11 +737,6 @@ export default function StaffPortalPage() {
                             >
                               <Heart size={16} /> Protocol
                             </button>
-                            <button 
-                              style={{ padding: '0.75rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'white', fontWeight: 700, cursor: 'pointer' }}
-                            >
-                              <MessageSquare size={16} />
-                            </button>
                           </>
                         ) : (
                           <>
@@ -791,14 +747,6 @@ export default function StaffPortalPage() {
                             >
                               <UserCheck size={16} /> {isExpired ? 'Lapsed Plan' : 'Check-in'}
                             </button>
-                            {hasPermission('payments') && (
-                              <button 
-                                onClick={() => { setSelectedMember(m); setIsPaymentsModalOpen(true); }}
-                                style={{ padding: '0.75rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'white', fontWeight: 700, cursor: 'pointer' }}
-                              >
-                                <CreditCard size={16} />
-                              </button>
-                            )}
                           </>
                         )}
                       </div>
@@ -810,67 +758,15 @@ export default function StaffPortalPage() {
           </div>
         )}
 
-        {activeView === 'leads' && (
-          <div className="fade-in">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0 }}>Enquiry Board</h2>
-                <button 
-                    onClick={() => setIsAddLeadModalOpen(true)}
-                    style={{ padding: '0.75rem 1.5rem', borderRadius: '12px', background: '#f59e0b', color: '#000', border: 'none', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                >
-                    <Star size={18} /> New Enquiry
-                </button>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
-                {leads.map(lead => (
-                    <div key={lead.id} className="glass-card" style={{ padding: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)', borderRadius: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                            <div>
-                                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0 }}>{lead.name}</h3>
-                                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                                    <span style={{ padding: '0.2rem 0.6rem', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', fontSize: '0.75rem', fontWeight: 700 }}>{lead.status}</span>
-                                    <span style={{ padding: '0.2rem 0.6rem', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', color: '#94a3b8', fontSize: '0.75rem' }}>{lead.source}</span>
-                                </div>
-                            </div>
-                            <button onClick={() => handleConvertToMember(lead)} style={{ padding: '0.5rem 1rem', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: 'none', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}>Convert</button>
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#94a3b8' }}>
-                                <Mail size={16} /> <span style={{ fontSize: '0.9rem' }}>{lead.email}</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#94a3b8' }}>
-                                <Phone size={16} /> <span style={{ fontSize: '0.9rem' }}>{lead.phone}</span>
-                            </div>
-                        </div>
-
-                        {lead.notes && (
-                            <p style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic', margin: 0, padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
-                                "{lead.notes}"
-                            </p>
-                        )}
-                    </div>
-                ))}
-                {leads.length === 0 && (
-                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '5rem' }}>
-                        <TrendingUp size={48} style={{ opacity: 0.05, marginBottom: '1.5rem' }} />
-                        <p style={{ color: '#94a3b8' }}>No enquiries found. Start capturing leads to grow revenue!</p>
-                    </div>
-                )}
-            </div>
-          </div>
-        )}
-
         {activeView === 'scanner' && (
             <div className="fade-in">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
-                    <div className="glass-card" style={{ padding: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#000', borderRadius: '32px', minHeight: '500px', justifyContent: 'center' }}>
+                <div className="scanner-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
+                    <div className="glass-card" style={{ padding: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#000', borderRadius: '32px', minHeight: '400px', justifyContent: 'center' }}>
                         {!isScanning && !scanStatus.message && (
                             <div style={{ textAlign: 'center' }}>
                                 <Camera size={64} color="#6366f1" style={{ marginBottom: '2rem', opacity: 0.5 }} />
                                 <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem' }}>Front Desk Scanner</h3>
-                                <p style={{ color: '#94a3b8', marginBottom: '2.5rem' }}>Point the camera at the member's Digital ID to verify access.</p>
+                                <p style={{ color: '#94a3b8', marginBottom: '2.5rem' }}>Point camera at member ID.</p>
                                 <button 
                                     onClick={() => setIsScanning(true)}
                                     style={{ padding: '1rem 3rem', borderRadius: '16px', background: '#6366f1', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1.1rem' }}
@@ -884,19 +780,8 @@ export default function StaffPortalPage() {
 
                         {scanStatus.message && (
                             <div style={{ textAlign: 'center', padding: '2rem', background: scanStatus.type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', borderRadius: '24px', border: `1px solid ${scanStatus.type === 'success' ? '#10b981' : '#ef4444'}`, width: '100%' }}>
-                                {scanStatus.type === 'success' ? <CheckCircle2 size={64} color="#10b981" /> : <XCircle size={64} color="#ef4444" />}
                                 <h2 style={{ fontSize: '1.8rem', fontWeight: 900, marginTop: '1.5rem', color: '#fff' }}>{scanStatus.message}</h2>
-                                <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>Automatic reset in 3 seconds...</p>
                             </div>
-                        )}
-                        
-                        {isScanning && (
-                            <button 
-                                onClick={() => setIsScanning(false)}
-                                style={{ marginTop: '2rem', background: 'rgba(255,255,255,0.05)', color: '#fff', border: 'none', padding: '0.75rem 2rem', borderRadius: '12px', cursor: 'pointer' }}
-                            >
-                                Deactivate
-                            </button>
                         )}
                     </div>
 
@@ -905,19 +790,14 @@ export default function StaffPortalPage() {
                             <History size={20} color="#6366f1" /> Recent Scans
                         </h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            {attendance.slice(0, 8).map(record => (
-                                <div key={record.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(99, 102, 241, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: 800, color: '#6366f1' }}>
-                                        {record.member?.name?.[0]}
-                                    </div>
+                            {attendance.slice(0, 5).map(record => (
+                                <div key={record.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
                                     <div style={{ flex: 1 }}>
                                         <p style={{ fontSize: '0.9rem', fontWeight: 700, margin: 0 }}>{record.member?.name}</p>
                                         <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0 }}>{new Date(record.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                                     </div>
-                                    <CheckCircle2 size={16} color="#10b981" />
                                 </div>
                             ))}
-                            {attendance.length === 0 && <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>No scans recorded yet.</p>}
                         </div>
                     </div>
                 </div>
@@ -927,48 +807,25 @@ export default function StaffPortalPage() {
         {activeView === 'schedule' && (
           <div className="fade-in">
              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Gym Schedule</h2>
-                <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(255,255,255,0.03)', padding: '0.4rem', borderRadius: '12px' }}>
-                   <button style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', background: '#6366f1', color: 'white', fontWeight: 700 }}>Today</button>
-                   <button style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', background: 'transparent', color: '#94a3b8', fontWeight: 500 }}>Week</button>
-                </div>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Schedule</h2>
              </div>
 
-             <div className="glass-card" style={{ padding: 0, overflow: 'hidden', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
+             <div className="glass-card" style={{ padding: 0, overflow: 'hidden', background: 'rgba(255,255,255,0.02)', borderRadius: '24px' }}>
                {classes.length === 0 ? (
                  <div style={{ padding: '5rem', textAlign: 'center' }}>
                     <Calendar size={48} style={{ opacity: 0.1, marginBottom: '1.5rem' }} />
-                    <p style={{ color: '#94a3b8' }}>No sessions scheduled for today.</p>
+                    <p style={{ color: '#94a3b8' }}>No sessions today.</p>
                  </div>
                ) : (
                  <div style={{ display: 'flex', flexDirection: 'column' }}>
                    {classes.map((c, i) => {
                      const confirmed = c.bookings?.filter(b => b.status === 'Confirmed').length || 0;
-                     const isFull = confirmed >= c.capacity;
                      return (
-                      <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '2rem', padding: '1.5rem 2rem', borderBottom: i < classes.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', transition: 'all 0.2s' }}>
+                      <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '2rem', padding: '1.5rem 2rem', borderBottom: i < classes.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', flexWrap: 'wrap' }}>
                         <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#6366f1', width: '80px' }}>{c.time}</div>
                         <div style={{ flex: 1 }}>
                           <p style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>{c.title}</p>
-                          <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>Coach: {c.trainer} · {c.capacity} slots</p>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <div style={{ textAlign: 'right' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'flex-end', marginBottom: '0.25rem' }}>
-                                <Users size={16} color={isFull ? '#fbbf24' : '#10b981'} />
-                                <span style={{ fontWeight: 700 }}>{confirmed} / {c.capacity}</span>
-                            </div>
-                            <span style={{ fontSize: '0.75rem', color: isFull ? '#fbbf24' : '#10b981', fontWeight: 600, textTransform: 'uppercase' }}>{isFull ? 'Waitlist Active' : 'Slots Available'}</span>
-                            </div>
-                            {isStaff && (
-                                <button 
-                                    onClick={() => { setSelectedClass(c); setIsBookingModalOpen(true); }}
-                                    style={{ background: '#6366f1', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                                >
-                                    <CalendarPlus size={16} /> Book
-                                </button>
-                            )}
-                            <ChevronRight size={20} color="#94a3b8" />
+                          <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>{c.trainer} · {c.capacity} slots</p>
                         </div>
                       </div>
                      );
@@ -981,40 +838,19 @@ export default function StaffPortalPage() {
 
         {isTrainer && activeView === 'analytics' && (
           <div className="fade-in">
-             <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
+             <div className="wellness-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div style={{ padding: '2.5rem', borderRadius: '32px', background: 'linear-gradient(135deg, #8b5cf6, #6366f1)', color: 'white', position: 'relative', overflow: 'hidden' }}>
-                        <Zap size={120} style={{ position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.1 }} />
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem' }}>Total Transformation Impact</h2>
-                        <div style={{ display: 'flex', gap: '3rem' }}>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem' }}>Impact Metrics</h2>
+                        <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
                            <div>
-                              <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: '0.5rem' }}>SESSIONS CONDUCTED</p>
+                              <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: '0.5rem' }}>SESSIONS</p>
                               <p style={{ fontSize: '2.5rem', fontWeight: 900 }}>{totalSessionsConducted}</p>
                            </div>
                            <div>
                               <p style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: '0.5rem' }}>AVG CONSISTENCY</p>
                               <p style={{ fontSize: '2.5rem', fontWeight: 900 }}>82%</p>
                            </div>
-                        </div>
-                    </div>
-
-                    <div className="glass-card" style={{ padding: '2rem', borderRadius: '24px' }}>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <Star size={20} color="#fbbf24" /> Top Performing Clients
-                        </h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                           {getTopPerformers().map((m, i) => (
-                             <div key={m.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                   <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fbbf24' }}>{i+1}</div>
-                                   <p style={{ fontWeight: 700, margin: 0 }}>{m.name}</p>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                   <p style={{ fontWeight: 800, margin: 0, color: '#10b981' }}>{m.consistencyScore} Visits</p>
-                                   <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0 }}>Active Profile</p>
-                                </div>
-                             </div>
-                           ))}
                         </div>
                     </div>
                 </div>
@@ -1024,28 +860,12 @@ export default function StaffPortalPage() {
                       <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1.5rem' }}>Retention Health</h3>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ color: '#94a3b8' }}>Consistent (10+ visits)</span>
+                            <span style={{ color: '#94a3b8' }}>Consistent</span>
                             <span style={{ fontWeight: 700 }}>{myMembers.filter(m => m.consistencyScore >= 10).length}</span>
                          </div>
                          <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                            <div style={{ width: `${(myMembers.filter(m => m.consistencyScore >= 10).length / myMembers.length) * 100}%`, height: '100%', background: '#10b981' }} />
+                            <div style={{ width: `${(myMembers.filter(m => m.consistencyScore >= 10).length / Math.max(myMembers.length, 1)) * 100}%`, height: '100%', background: '#10b981' }} />
                          </div>
-
-                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                            <span style={{ color: '#94a3b8' }}>At Risk ({`< 5 visits`})</span>
-                            <span style={{ fontWeight: 700, color: '#ef4444' }}>{attentionNeededCount}</span>
-                         </div>
-                         <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                            <div style={{ width: `${(attentionNeededCount / myMembers.length) * 100}%`, height: '100%', background: '#ef4444' }} />
-                         </div>
-                      </div>
-                   </div>
-
-                   <div className="glass-card" style={{ padding: '2rem', borderRadius: '24px', background: 'rgba(255,255,255,0.01)', border: '1px dashed rgba(255,255,255,0.1)' }}>
-                      <div style={{ textAlign: 'center', padding: '1rem' }}>
-                        <Award size={40} color="#8b5cf6" style={{ marginBottom: '1rem', opacity: 0.5 }} />
-                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Elite Coach Status</h4>
-                        <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.5rem' }}>You are in the top 15% of coaches this month based on client retention.</p>
                       </div>
                    </div>
                 </div>
@@ -1055,19 +875,19 @@ export default function StaffPortalPage() {
 
       </main>
 
-      {/* Booking Modal (Receptionist Only) */}
+      {/* Booking Modal */}
       {isBookingModalOpen && (
           <div className="modal-overlay open" onClick={() => setIsBookingModalOpen(false)}>
-              <div className="slide-pane" style={{ width: '450px' }} onClick={e => e.stopPropagation()}>
+              <div className="modal-pane slide-pane" style={{ width: '450px' }} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                      <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Book into {selectedClass?.title}</h3>
+                      <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Book Session</h3>
                       <button onClick={() => setIsBookingModalOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}><X size={24} color="#fff" /></button>
                   </div>
                   <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
                     <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                     <input 
                         type="text" 
-                        placeholder="Search member to book..." 
+                        placeholder="Search member..." 
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '0.8rem 1rem 0.8rem 3rem', borderRadius: '12px', color: 'white', width: '100%' }}
                     />
@@ -1077,7 +897,6 @@ export default function StaffPortalPage() {
                           <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px' }}>
                               <div>
                                   <p style={{ fontWeight: 700, margin: 0 }}>{m.name}</p>
-                                  <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>{m.plan}</p>
                               </div>
                               <button 
                                 onClick={() => handleBookMember(selectedClass.id, m.id)}
@@ -1092,10 +911,10 @@ export default function StaffPortalPage() {
           </div>
       )}
 
-      {/* Wellness Modal (Coaches Only) */}
+      {/* Wellness Modal */}
        {isTrainer && (
          <div className={`modal-overlay ${isWellnessModalOpen ? 'open' : ''}`} onClick={() => setIsWellnessModalOpen(false)}>
-            <div className="slide-pane" style={{ width: '650px', background: '#0c0c0e' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-pane slide-pane" style={{ width: '650px', background: '#0c0c0e' }} onClick={e => e.stopPropagation()}>
             <div style={{ padding: '2rem', borderBottom: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
                 <button onClick={() => setIsWellnessModalOpen(false)} style={{ position: 'absolute', right: '2rem', top: '2rem', background: 'rgba(255,255,255,0.05)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X size={18} color="#fff" />
@@ -1106,23 +925,20 @@ export default function StaffPortalPage() {
                 </div>
                 <div>
                     <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>{selectedMember?.name}</h3>
-                    <p style={{ color: '#94a3b8', margin: 0 }}>Protocol ID: {selectedMember?.id?.substring(0, 8).toUpperCase()}</p>
                 </div>
                 </div>
             </div>
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', padding: '0.5rem', borderRadius: '0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', padding: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
                 {[
                 { id: 'workouts', icon: Dumbbell, label: 'Workouts', color: '#6366f1' },
-                { id: 'diets', icon: Utensils, label: 'Nutrition', color: '#10b981' },
-                { id: 'progress', icon: TrendingUp, label: 'Results', color: '#8b5cf6' },
-                { id: 'notes', icon: Edit3, label: 'Internal', color: '#f59e0b' }
+                { id: 'diets', icon: Utensils, label: 'Nutrition', color: '#10b981' }
                 ].map(t => (
                 <button 
                     key={t.id}
                     onClick={() => setActiveTab(t.id)}
                     style={{ 
                     flex: 1, padding: '0.75rem', borderRadius: '12px', border: 'none', background: activeTab === t.id ? 'rgba(255,255,255,0.05)' : 'transparent',
-                    color: activeTab === t.id ? t.color : '#94a3b8', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+                    color: activeTab === t.id ? t.color : '#94a3b8', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', minWidth: '120px'
                     }}
                 >
                     <t.icon size={16} /> {t.label}
@@ -1132,96 +948,9 @@ export default function StaffPortalPage() {
             <div className="modal-body" style={{ padding: '2rem', maxHeight: 'calc(100vh - 250px)', overflowY: 'auto' }}>
                 {activeTab === 'workouts' && (
                 <div className="fade-in">
-                    <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '2rem', borderRadius: '24px', marginBottom: '2rem' }}>
-                        <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Plus size={20} color="#6366f1" /> Deploy Training Protocol</h4>
+                    <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1.5rem', borderRadius: '24px', marginBottom: '2rem' }}>
+                        <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: 800 }}>Training Protocol</h4>
                         <form onSubmit={handleCreateWorkout} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                          <div className="form-group">
-                            <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: '0.5rem', display: 'block' }}>PROGRAM TITLE</label>
-                            <input type="text" name="title" placeholder="e.g. Strength Phase - Week 1" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', width: '100%' }} />
-                          </div>
-                          <div className="form-group">
-                            <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: '0.5rem', display: 'block' }}>EXERCISE SEQUENCE</label>
-                            <textarea name="exercises" placeholder="Ex: Bicep Curls 3 sets 10 reps&#10;Ex: Squats 4 sets 12 reps..." rows="6" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', resize: 'none', width: '100%', lineHeight: '1.6' }}></textarea>
-                          </div>
-                          <button type="submit" style={{ padding: '1rem', borderRadius: '12px', border: 'none', background: '#6366f1', color: 'white', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(99, 102, 241, 0.2)' }}>
-                            <ShieldCheck size={18} /> Publish to Athlete Dashboard
-                          </button>
-                        </form>
-                    </div>
-                    <h4 style={{ marginBottom: '1rem', fontWeight: 800 }}>Prescribed Sessions</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {wellnessData.workouts.map(w => (
-                        <div key={w.id} style={{ padding: '1.5rem', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <p style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '1rem' }}>{w.title}</p>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                            {w.exercises?.map((ex, i) => (
-                                <span key={i} style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1', padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600 }}>{ex.name}</span>
-                            ))}
-                            </div>
-                        </div>
-                        ))}
-                    </div>
-                </div>
-                )}
-                {activeTab === 'diets' && (
-                <div className="fade-in">
-                    <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '2rem', borderRadius: '24px', marginBottom: '2rem' }}>
-                        <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Utensils size={20} color="#10b981" /> Elite Nutrition Deployment</h4>
-                        
-                        {/* Elite Macro Calculator - Live Intelligence */}
-                        <div style={{ padding: '1.5rem', background: '#09090b', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1.5rem' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', letterSpacing: '1px' }}>LIVE RATIO CALCULATION</span>
-                                <span style={{ fontSize: '0.7rem', color: '#fff', fontWeight: 900 }}>EST. {(macroCalc.p * 4 + macroCalc.c * 4 + macroCalc.f * 9)} KCAL</span>
-                            </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                                <div>
-                                    <label style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', marginBottom: '0.25rem' }}>PROTEIN (G)</label>
-                                    <input type="number" value={macroCalc.p} onChange={e => setMacroCalc({...macroCalc, p: parseInt(e.target.value) || 0})} style={{ background: 'transparent', border: '1px solid rgba(139, 92, 246, 0.3)', color: 'white', padding: '0.5rem', borderRadius: '8px', width: '100%' }} />
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', marginBottom: '0.25rem' }}>CARBS (G)</label>
-                                    <input type="number" value={macroCalc.c} onChange={e => setMacroCalc({...macroCalc, c: parseInt(e.target.value) || 0})} style={{ background: 'transparent', border: '1px solid rgba(59, 130, 246, 0.3)', color: 'white', padding: '0.5rem', borderRadius: '8px', width: '100%' }} />
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', marginBottom: '0.25rem' }}>FATS (G)</label>
-                                    <input type="number" value={macroCalc.f} onChange={e => setMacroCalc({...macroCalc, f: parseInt(e.target.value) || 0})} style={{ background: 'transparent', border: '1px solid rgba(245, 158, 11, 0.3)', color: 'white', padding: '0.5rem', borderRadius: '8px', width: '100%' }} />
-                                </div>
-                            </div>
-                            {/* Dynamic Ratio Bar */}
-                            <div style={{ display: 'flex', gap: '4px', marginTop: '1.25rem', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
-                                <div style={{ flex: (macroCalc.p * 4) || 1, background: '#8b5cf6', transition: 'all 0.5s ease' }}></div>
-                                <div style={{ flex: (macroCalc.c * 4) || 1, background: '#3b82f6', transition: 'all 0.5s ease' }}></div>
-                                <div style={{ flex: (macroCalc.f * 9) || 1, background: '#f59e0b', transition: 'all 0.5s ease' }}></div>
-                            </div>
-                        </div>
-
-                        <form onSubmit={handleCreateDiet} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                          <div className="form-group">
-                            <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: '0.5rem', display: 'block' }}>PROTOCOL NAME</label>
-                            <input type="text" name="title" placeholder="e.g. Cutting Macros - 2200 kcal" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', width: '100%' }} />
-                          </div>
-                          <div className="form-group">
-                            <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: '0.5rem', display: 'block' }}>MEAL STRUCTURE</label>
-                            <textarea name="meals" placeholder="Meal 1: Oats & Whey&#10;Meal 2: Chicken & Rice..." rows="4" required style={{ background: '#09090b', border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', color: 'white', resize: 'none', width: '100%', lineHeight: '1.6' }}></textarea>
-                          </div>
-                          <button type="submit" style={{ padding: '1rem', borderRadius: '12px', border: 'none', background: '#10b981', color: 'white', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: '0 10px 20px rgba(16, 185, 129, 0.2)' }}>
-                            <Target size={18} /> Lock Transformation Plan
-                          </button>
-                        </form>
-                    </div>
-                    <h4 style={{ marginBottom: '1rem', fontWeight: 800 }}>Active Diet Logs</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {wellnessData.diets.map(d => (
-                        <div key={d.id} style={{ padding: '1.5rem', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <p style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '1rem' }}>{d.title}</p>
-                            <div style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                            {d.meals?.map((m, i) => <p key={i} style={{ margin: '0 0 0.5rem 0' }}>• {m.content}</p>)}
-                            </div>
-                        </div>
-                        ))}
-                    </div>
-                </div>
                 )}
                 {activeTab === 'notes' && (
                 <div className="fade-in">
