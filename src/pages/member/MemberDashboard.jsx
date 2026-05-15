@@ -169,6 +169,26 @@ export default function MemberDashboard() {
           transform: translateX(4px);
           box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
+        @media (max-width: 640px) {
+          .activity-item-premium {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+          }
+          .activity-item-premium > div:last-child {
+            width: 100%;
+            justify-content: space-between;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1rem;
+          }
+          .slide-pane {
+            width: 100% !important;
+            padding: 1.25rem !important;
+          }
+          .modal-overlay {
+             justify-content: center !important;
+          }
+        }
         .floating-icon {
           animation: float 6s ease-in-out infinite;
         }
@@ -631,7 +651,7 @@ export default function MemberDashboard() {
 
       {/* Digital ID (QR) Modal */}
       <div className={`modal-overlay ${showQR ? 'open' : ''}`} onClick={() => setShowQR(false)}>
-        <div className="glass-card-premium" style={{ width: '350px', padding: '2.5rem', textAlign: 'center', position: 'relative', background: '#fff' }} onClick={e => e.stopPropagation()}>
+        <div className="glass-card-premium" style={{ width: '90%', maxWidth: '400px', padding: '2.5rem', textAlign: 'center', position: 'relative', background: '#fff' }} onClick={e => e.stopPropagation()}>
           <button className="btn-icon-round" onClick={() => setShowQR(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
             <X size={20} />
           </button>
@@ -656,7 +676,7 @@ export default function MemberDashboard() {
 
       {/* Explore Classes Modal */}
       <div className={`modal-overlay ${showExplore ? 'open' : ''}`} onClick={() => setShowExplore(false)}>
-        <div className="slide-pane" style={{ width: '600px' }} onClick={e => e.stopPropagation()}>
+        <div className="slide-pane" style={{ width: '100%', maxWidth: '600px' }} onClick={e => e.stopPropagation()}>
           <div className="modal-header" style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ margin: 0, color: '#0f172a', fontWeight: 800 }}>Explore Gym Sessions</h3>
             <button className="btn-icon-round" onClick={() => setShowExplore(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
